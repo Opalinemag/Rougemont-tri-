@@ -1,16 +1,16 @@
 # Site du Rougemont Triathlon
 
-## Mettre le site en ligne (gratuit, sur ton propre compte)
+Site en ligne : https://rougemont-triathlon.vercel.app
 
-1. Crée un compte gratuit sur **github.com**, puis un nouveau dépôt (repository) et envoie-y tout le contenu de ce dossier (bouton *Add file → Upload files*). N'envoie pas le dossier `node_modules` s'il existe.
-2. Crée un compte gratuit sur **vercel.com** en te connectant avec GitHub.
-3. Sur Vercel : **Add New → Project**, choisis le dépôt, puis **Deploy**.
-4. Toujours sur Vercel, dans le projet :
-   - **Storage → Create → Blob** : crée un espace de stockage et relie-le au projet (sert à garder les photos et actualités ajoutées depuis l'admin).
-   - **Settings → Environment Variables** : ajoute deux variables :
-     - `ADMIN_USER` : l'identifiant de connexion (ex. `bureau`) ;
-     - `ADMIN_PASSWORD` : le mot de passe de ton choix (long, que tu es seul à connaître).
-   - **Deployments → … → Redeploy** pour prendre en compte ces réglages.
+## Hébergement
+
+- **GitHub** : dépôt `Opalinemag/Rougemont-tri-` (fichiers du site). Chaque envoi sur la branche `main` remet le site en ligne automatiquement.
+- **Vercel** : projet `rougemont-triathlon`, relié au dépôt GitHub. Réglages nécessaires dans le projet :
+  - **Stockage → Blob**, en accès **public**, relié au projet (garde les photos et actualités ajoutées depuis l'admin) ;
+  - **Paramètres → Variables d'environnement** (Production) :
+    - `ADMIN_USER` : l'identifiant de connexion à l'admin ;
+    - `ADMIN_PASSWORD` : le mot de passe (long, connu du seul bureau).
+  - Après un changement de réglage : **Déploiements → ⋯ → Redéployer**.
 
 ## Espace administrateur
 
