@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 300" width="740" height="300">
+  <!-- Logo SARL de la Forge redessiné d'après le visuel fourni par le club -->
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#111">
+    <text x="4" y="148" font-size="168" letter-spacing="-4" textLength="388" lengthAdjust="spacingAndGlyphs">SARL</text>
+    <text x="8" y="240" font-size="62" textLength="190" lengthAdjust="spacingAndGlyphs">DE LA</text>
+    <text x="214" y="284" font-size="150" letter-spacing="-3" textLength="404" lengthAdjust="spacingAndGlyphs">FORGE</text>
+  </g>
+  <!-- bras de pelleteuse -->
+  <g fill="#f0c419">
+    <!-- flèche (bras principal) -->
+    <polygon points="398,138 470,18 520,10 560,30 640,128 620,150 545,62 520,58 452,140"/>
+    <!-- balancier -->
+    <polygon points="600,112 640,96 690,170 700,210 672,214 652,170"/>
+    <!-- godet -->
+    <path d="M660,104 L728,100 Q736,150 718,212 L706,214 L700,206 L694,214 L688,206 L680,214 L668,190 Q700,150 660,104 Z"/>
+  </g>
+  <g fill="#fff">
+    <circle cx="512" cy="34" r="9"/>
+    <circle cx="618" cy="128" r="9"/>
+    <circle cx="664" cy="112" r="6"/>
+    <polygon points="520,28 548,40 600,104 592,110 540,48 518,38"/>
+  </g>
+</svg>

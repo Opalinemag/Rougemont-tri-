@@ -1,0 +1,5 @@
+node_modules/
+uploads/
+.vercel/
+.env*
+NOTE-POUR-CLAUDE.txt

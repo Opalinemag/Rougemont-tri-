@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Partenaires – Rougemont Triathlon</title>
+  <meta name="description" content="Les sponsors et partenaires qui soutiennent le Rougemont Triathlon, et le maillot du club.">
+  <link rel="icon" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="partenaires">
+<header id="site-header"></header>
+
+<main>
+  <section class="pagehead" style="background-image:url('images/enfants-alignes.jpg')">
+    <div class="container pagehead__inner">
+      <p class="breadcrumb"><a href="index.html">Accueil</a> / Partenaires</p>
+      <h1>Nos partenaires</h1>
+      <p>Les entreprises et partenaires qui soutiennent le club et permettent aux enfants de pratiquer le triathlon.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section__head">
+        <div>
+          <span class="kicker">Ils nous soutiennent</span>
+          <h2>Ils soutiennent le club</h2>
+        </div>
+      </div>
+      <div class="sponsor-grid" id="sponsors-list"></div>
+    </div>
+  </section>
+
+  <section class="section section--soft">
+    <div class="container two-cols" id="maillot"></div>
+  </section>
+
+  <section class="section">
+    <div class="container two-cols" style="align-items:start" id="partenaire">
+      <div class="prose">
+        <span class="kicker">Devenir partenaire</span>
+        <h2>Soutenir un club de jeunes</h2>
+        <p>Rougemont Triathlon est un projet sportif, humain et local, tourné vers les jeunes. Votre soutien aide à financer le matériel, les déplacements et les tenues du club. Chaque partenariat repose sur une relation de confiance et sur une volonté commune de faire grandir le sport local.</p>
+        <p>En retour, votre entreprise est mise en avant sur le site, sur nos réseaux sociaux et, selon le partenariat, sur le maillot du club.</p>
+      </div>
+      <ul class="team" style="margin-top:0">
+        <li><strong>Visibilité</strong><span>Logo sur le site et le bandeau partenaires</span></li>
+        <li><strong>Maillot</strong><span>Logo sur la tenue officielle du club</span></li>
+        <li><strong>Réseaux sociaux</strong><span>Présentation de votre entreprise</span></li>
+        <li><strong>Engagement local</strong><span>Soutien à la jeunesse et à l'inclusion</span></li>
+        <li style="border:0;padding-top:20px;display:block">
+          <p style="color:var(--muted);margin-bottom:12px">Pour devenir partenaire, contactez directement le club :</p>
+          <div class="hero__actions">
+            <a data-club="telephone" class="btn btn--red"></a>
+            <a data-club="email" class="btn btn--outline" style="text-transform:none"></a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="donnees/club.js"></script>
+<script src="donnees/sponsors.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/trifonction3d.js"></script>
+<script src="js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Espace administrateur – Rougemont Triathlon</title>
+  <link rel="icon" href="images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin">
+
+<!-- Connexion -->
+<section class="login" id="login">
+  <form class="login__card" id="login-form">
+    <img src="images/logo.png" alt="Rougemont Triathlon">
+    <h1>Espace administrateur</h1>
+    <p>Réservé aux membres du bureau du club.</p>
+    <label>Identifiant<input type="text" name="user" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus></label>
+    <label>Mot de passe<input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="btn btn--navy" type="submit">Se connecter</button>
+    <p class="login__error" id="login-error" hidden></p>
+    <a href="index.html" class="login__back">← Retour au site</a>
+  </form>
+</section>
+
+<!-- Tableau de bord -->
+<div id="app" hidden>
+  <header class="adm-bar">
+    <div class="container adm-bar__inner">
+      <a href="index.html" class="brand" target="_blank" rel="noopener">
+        <img src="images/logo.png" alt="">
+        <span><strong>Rougemont</strong><em>Admin</em></span>
+      </a>
+      <div class="adm-bar__actions">
+        <a href="index.html" target="_blank" rel="noopener" class="btn btn--outline btn--sm">Voir le site</a>
+        <button class="btn btn--sm btn--ghost-dark" id="logout">Déconnexion</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="adm-tabs container">
+    <button class="active" data-tab="actus">Actualités</button>
+    <button data-tab="photos">Photos</button>
+    <button data-tab="planning">Planning</button>
+    <button data-tab="sponsors">Sponsors</button>
+  </nav>
+
+  <main class="container adm-main">
+
+    <!-- ACTUALITÉS -->
+    <section data-panel="actus">
+      <div class="adm-head">
+        <div><h2>Actualités</h2><p>Les actualités publiées sur le site, de la plus récente à la plus ancienne.</p></div>
+        <button class="btn btn--red btn--sm" id="news-new">+ Nouvelle actualité</button>
+      </div>
+
+      <form class="adm-card adm-form" id="news-form" hidden>
+        <h3 id="news-form-title">Nouvelle actualité</h3>
+        <label>Titre<input name="titre" required maxlength="120"></label>
+        <div class="row3">
+          <label>Date<input name="date" type="date" required></label>
+          <label>Catégorie<input name="categorie" list="cats" placeholder="Vie du club"></label>
+          <datalist id="cats"><option>Vie du club</option><option>Jeunes</option><option>Compétition</option><option>Séances</option><option>Inclusion</option></datalist>
+        </div>
+        <label>Résumé (affiché sur la carte)<textarea name="resume" rows="2" maxlength="260" required></textarea></label>
+        <label>Texte complet<textarea name="texte" rows="8" placeholder="Laissez une ligne vide entre deux paragraphes."></textarea></label>
+        <div class="img-field">
+          <img id="news-img-preview" alt="" hidden>
+          <label class="btn btn--outline btn--sm file-btn">Choisir une photo<input type="file" accept="image/*" id="news-img"></label>
+          <button type="button" class="link-btn" id="news-img-remove" hidden>Retirer la photo</button>
+        </div>
+        <div class="adm-form__actions">
+          <button class="btn btn--red" type="submit">Publier</button>
+          <button class="btn btn--outline" type="button" id="news-cancel">Annuler</button>
+        </div>
+      </form>
+
+      <div id="news-admin-list"></div>
+    </section>
+
+    <!-- PHOTOS -->
+    <section data-panel="photos" hidden>
+      <div class="adm-head">
+        <div><h2>Photos</h2><p>Les albums de la page Photos. Les photos sont réduites automatiquement avant l'envoi.</p></div>
+        <button class="btn btn--red btn--sm" id="album-new">+ Nouvel album</button>
+      </div>
+      <form class="adm-card adm-form" id="album-form" hidden>
+        <h3>Nouvel album</h3>
+        <div class="row3">
+          <label>Titre de l'album<input name="titre" required placeholder="Ex : Cross du Doubs"></label>
+          <label>Date ou période<input name="date" placeholder="Ex : Novembre 2026"></label>
+        </div>
+        <div class="adm-form__actions">
+          <button class="btn btn--red" type="submit">Créer l'album</button>
+          <button class="btn btn--outline" type="button" id="album-cancel">Annuler</button>
+        </div>
+      </form>
+      <div id="albums-admin"></div>
+    </section>
+
+    <!-- PLANNING -->
+    <section data-panel="planning" hidden>
+      <div class="adm-head">
+        <div><h2>Planning hebdomadaire</h2><p>Modifiez les créneaux puis cliquez sur « Enregistrer le planning ».</p></div>
+      </div>
+      <div class="adm-card">
+        <label class="block">Message affiché au-dessus du planning (changement de lieu, météo…) — laisser vide pour ne rien afficher
+          <input id="info-input" placeholder="Ex : Mercredi, entraînement au gymnase à cause de la pluie">
+        </label>
+        <div class="table-wrap">
+          <table class="adm-table">
+            <thead><tr><th>Jour</th><th>Début</th><th>Fin</th><th>Groupe</th><th>Activité</th><th>Lieu</th><th>Remarque</th><th>Annulé</th><th></th></tr></thead>
+            <tbody id="planning-rows"></tbody>
+          </table>
+        </div>
+        <div class="adm-form__actions">
+          <button class="btn btn--outline btn--sm" id="row-add" type="button">+ Ajouter un créneau</button>
+          <button class="btn btn--red" id="planning-save" type="button">Enregistrer le planning</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPONSORS -->
+    <section data-panel="sponsors" hidden>
+      <div class="adm-head">
+        <div><h2>Sponsors</h2><p>Les sponsors apparaissent sur la page Sponsors et dans le bandeau défilant de l'accueil.</p></div>
+        <button class="btn btn--red btn--sm" id="sponsor-new">+ Nouveau sponsor</button>
+      </div>
+
+      <form class="adm-card adm-form" id="sponsor-form" hidden>
+        <h3 id="sponsor-form-title">Nouveau sponsor</h3>
+        <div class="row3">
+          <label>Nom<input name="nom" required maxlength="80"></label>
+          <label>Activité<input name="activite" placeholder="Ex : Boulangerie artisanale" maxlength="80"></label>
+        </div>
+        <label>Ce qu'il apporte au club / présentation<textarea name="description" rows="3" maxlength="400"></textarea></label>
+        <label>Site internet (facultatif)<input name="site" type="url" placeholder="https://"></label>
+        <div class="img-field">
+          <img id="sponsor-logo-preview" alt="" hidden class="contain">
+          <label class="btn btn--outline btn--sm file-btn">Choisir le logo<input type="file" accept="image/*" id="sponsor-logo"></label>
+          <button type="button" class="link-btn" id="sponsor-logo-remove" hidden>Retirer le logo</button>
+        </div>
+        <div class="adm-form__actions">
+          <button class="btn btn--red" type="submit">Enregistrer</button>
+          <button class="btn btn--outline" type="button" id="sponsor-cancel">Annuler</button>
+        </div>
+      </form>
+
+      <div id="sponsors-admin"></div>
+
+      <div class="adm-card adm-form" style="margin-top:28px">
+        <h3>Maillot du club</h3>
+        <div class="img-field">
+          <img id="maillot-preview" alt="" hidden class="contain">
+          <label class="btn btn--outline btn--sm file-btn">Choisir la photo du maillot<input type="file" accept="image/*" id="maillot-img"></label>
+          <button type="button" class="link-btn" id="maillot-remove" hidden>Retirer la photo</button>
+        </div>
+        <label>Texte de présentation (facultatif)<textarea id="maillot-texte" rows="3" placeholder="Ex : Le nouveau maillot aux couleurs du club et de nos partenaires."></textarea></label>
+        <div class="adm-form__actions"><button class="btn btn--red" type="button" id="maillot-save">Enregistrer le maillot</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="donnees/entrainements.js"></script>
+<script src="donnees/actualites.js"></script>
+<script src="donnees/photos.js"></script>
+<script src="donnees/sponsors.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

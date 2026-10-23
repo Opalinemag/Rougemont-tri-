@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 230" width="740" height="230">
+  <!-- Logo SARL Michel Chambrette redessiné d'après le visuel fourni par le club -->
+  <defs>
+    <linearGradient id="fond" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd07a"/>
+      <stop offset="0.5" stop-color="#ffb347"/>
+      <stop offset="1" stop-color="#ff9a3c"/>
+    </linearGradient>
+    <linearGradient id="goutte" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7fd3f7"/>
+      <stop offset="1" stop-color="#1e88d6"/>
+    </linearGradient>
+    <linearGradient id="flamme" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ffe14a"/>
+      <stop offset="0.45" stop-color="#ff7a1a"/>
+      <stop offset="1" stop-color="#e3171b"/>
+    </linearGradient>
+    <radialGradient id="bille" cx="0.35" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#b9f07a"/>
+      <stop offset="1" stop-color="#3fa21c"/>
+    </radialGradient>
+  </defs>
+  <rect x="6" y="6" width="728" height="218" rx="34" fill="url(#fond)" stroke="#ff8a1f" stroke-width="6"/>
+  <!-- flammes -->
+  <path d="M110,205 C60,190 58,140 78,105 C82,130 92,138 100,140 C88,108 96,70 124,40 C120,72 132,92 146,104 C150,130 140,170 110,205 Z" fill="url(#flamme)"/>
+  <path d="M112,200 C92,186 92,160 104,140 C108,156 116,160 122,162 C120,176 120,190 112,200 Z" fill="#ffe14a"/>
+  <!-- goutte d'eau -->
+  <path d="M150,32 C168,80 196,110 196,150 C196,182 176,204 150,204 C140,204 134,196 134,186 C134,140 146,92 150,32 Z" fill="url(#goutte)"/>
+  <!-- textes -->
+  <text x="212" y="140" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="22" fill="#e3171b" transform="rotate(-90 212 140)" text-anchor="middle">SARL</text>
+  <text x="300" y="62" font-family="'Brush Script MT', 'Segoe Script', cursive" font-style="italic" font-size="52" fill="#e3171b">Michel</text>
+  <circle cx="262" cy="104" r="17" fill="url(#bille)"/>
+  <text x="234" y="124" font-family="'Century Gothic', 'Trebuchet MS', Arial, sans-serif" font-weight="700" font-size="74" fill="#e3171b" textLength="480" lengthAdjust="spacingAndGlyphs">Chambrette</text>
+  <g font-family="'Century Gothic', 'Trebuchet MS', Arial, sans-serif" font-size="40" fill="#1a64c8">
+    <text x="236" y="170">Chauffage - Sanitaire</text>
+    <text x="236" y="212">Dépannage</text>
+  </g>
+</svg>
