@@ -1,9 +1,9 @@
-import { checkLogin, createToken } from "../lib/auth.js";
+import { checkLogin, comptesConfigures, createToken } from "../lib/auth.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Méthode non autorisée" });
-  if (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD) {
-    return res.status(500).json({ error: "L'identifiant et le mot de passe administrateur ne sont pas encore configurés dans Vercel (ADMIN_USER et ADMIN_PASSWORD)." });
+  if (!comptesConfigures()) {
+    return res.status(500).json({ error: "Aucun compte administrateur n'est encore configuré dans Vercel (ADMIN_COMPTES)." });
   }
   // petite pause pour ralentir les tentatives au hasard
   await new Promise(r => setTimeout(r, 600));
