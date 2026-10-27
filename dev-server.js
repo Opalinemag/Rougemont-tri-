@@ -13,7 +13,7 @@ process.env.ADMIN_PASSWORD ||= "test-local";
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = process.cwd();
 const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".svg": "image/svg+xml" };
-const API = Object.fromEntries(["login", "content", "upload"].map(n => ["/api/" + n, `./api/${n}.js`]));
+const API = Object.fromEntries(["login", "content", "upload", "media"].map(n => ["/api/" + n, `./api/${n}.js`]));
 
 http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
