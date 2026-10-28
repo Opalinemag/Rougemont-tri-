@@ -470,3 +470,5 @@ a.topbar__item:hover { color: var(--white); }
 .a-confirmer p { color: var(--muted); margin: 6px 0 14px; }
 @media (max-width: 980px) { .profils { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) { .profils { grid-template-columns: 1fr; } }
+
+.footer__fftri { margin-top: 10px; font-weight: 700; color: var(--white); font-size: .88rem; }

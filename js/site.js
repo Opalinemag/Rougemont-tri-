@@ -66,6 +66,7 @@ function renderLayout() {
       <div>
         <img src="images/logo.png" alt="Rougemont Triathlon" class="footer__logo">
         <p>Le sport ensemble, l'aventure en équipe ! Duathlon, course à pied, vélo et Bike &amp; Run, avec une place privilégiée pour les jeunes.</p>
+        <p class="footer__fftri">Club affilié à la Fédération Française de Triathlon (FFTri)</p>
       </div>
       <div>
         <h4>Le site</h4>
