@@ -525,3 +525,10 @@ a.topbar__item:hover { color: var(--white); }
 /* Les longues adresses (mail, liens) passent à la ligne au lieu de déborder */
 p, li, td, dd, figcaption { overflow-wrap: break-word; }
 a[href^="mailto:"] { overflow-wrap: anywhere; }
+
+/* Pass Club : essai gratuit 1 mois */
+.pass-club { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; align-items: center; border: 2px solid var(--red); border-radius: var(--radius); padding: 30px 32px; background: var(--white); }
+.pass-club p { margin-top: 10px; }
+.pass-club__actions { display: flex; flex-direction: column; gap: 12px; align-items: stretch; text-align: center; }
+.pass-club__actions .btn { justify-content: center; }
+@media (max-width: 820px) { .pass-club { grid-template-columns: 1fr; padding: 22px 18px; } }

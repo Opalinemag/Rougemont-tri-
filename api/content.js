@@ -6,7 +6,7 @@ import { isAuthorized } from "../lib/auth.js";
 const asArray = v => (Array.isArray(v) ? v : []);
 const texte = v => String(v ?? "").slice(0, 2000);
 // Champs du club modifiables depuis l'espace de gestion
-const CHAMPS_CLUB = ["telephone", "email", "ville", "adresse", "facebook", "instagram", "lienLicenceFFTRI", "cleFormulaire"];
+const CHAMPS_CLUB = ["telephone", "email", "ville", "adresse", "facebook", "instagram", "lienLicenceFFTRI", "lienPassClub"];
 
 export default async function handler(req, res) {
   try {

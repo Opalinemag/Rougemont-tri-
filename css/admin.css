@@ -88,3 +88,16 @@ body.admin { background: var(--bg-soft); min-height: 100vh; }
 .adm-form h3:not(:first-child) { margin-top: 22px; }
 .adm-tabs { flex-wrap: wrap; }
 @media (max-width: 640px) { .adm-tabs button { padding: 10px 12px; font-size: 1.05rem; } }
+.badge { display: inline-block; min-width: 20px; padding: 1px 7px; border-radius: 999px; background: var(--red); color: #fff; font-size: .78rem; text-align: center; vertical-align: middle; }
+.demande { margin-bottom: 14px; }
+.demande.is-lu { opacity: .65; }
+.demande__tete { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.demande__tete small { color: var(--muted); }
+.demande__actions { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+.demande__infos { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 10px; }
+.demande__infos span { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.demande__infos a { overflow-wrap: anywhere; }
+.demande__message { margin-top: 10px; padding: 10px 12px; background: #f4f6fa; border-radius: 6px; white-space: pre-line; }
+.aide { color: var(--muted); font-size: .95rem; margin: 0 0 12px; }
+ol.aide { padding-left: 20px; }
+ol.aide li { margin-bottom: 4px; }

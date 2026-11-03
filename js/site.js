@@ -113,6 +113,9 @@ function renderLayout() {
   document.querySelectorAll("[data-licence]").forEach(el => {
     if (CLUB.lienLicenceFFTRI) el.href = CLUB.lienLicenceFFTRI; else el.remove();
   });
+  document.querySelectorAll("[data-passclub]").forEach(el => {
+    if (CLUB.lienPassClub) el.href = CLUB.lienPassClub; else el.remove();
+  });
   document.querySelectorAll("[data-club]").forEach(el => {
     const k = el.dataset.club;
     el.textContent = CLUB[k];
@@ -226,7 +229,7 @@ async function loadAdminContent() {
     if (c.notes && typeof c.notes === "object") DATA.notes = { meteo: c.notes.meteo || "", adultes: c.notes.adultes || "" };
     // Coordonnées et réseaux du club : on réaffiche en-tête et pied de page
     if (c.club && typeof c.club === "object" && typeof CLUB !== "undefined") {
-      for (const [k, v] of Object.entries(c.club)) if (typeof v === "string" && (v || k === "facebook" || k === "instagram" || k === "lienLicenceFFTRI")) CLUB[k] = v;
+      for (const [k, v] of Object.entries(c.club)) if (typeof v === "string" && (v || ["facebook", "instagram", "lienLicenceFFTRI", "lienPassClub"].includes(k))) CLUB[k] = v;
       renderLayout();
     }
   } catch { /* pas de serveur : on garde les fichiers du dossier donnees */ }
@@ -385,10 +388,9 @@ function renderSponsors() {
 }
 
 /* ---------- Formulaire de demande d'essai ----------
-   La demande arrive directement dans la boîte mail du club (CLUB.email)
-   grâce au service gratuit FormSubmit (formsubmit.co).
-   La toute première fois, FormSubmit envoie un e-mail d'activation au
-   club : il suffit de cliquer sur le lien qu'il contient. */
+   La demande est enregistrée par le site (/api/demande) : le club la retrouve
+   dans le site pilote, onglet « Demandes », et reçoit un mail si la
+   notification est activée. */
 function contactForm() {
   const f = $("#contact-form");
   if (!f) return;
@@ -406,44 +408,22 @@ function contactForm() {
     btn.disabled = true;
     btn.textContent = "Envoi en cours…";
     const rappel = f.rappel.value;
-    const data = {
-      "Nom": f.nom.value,
-      "Objet": f.objet.value,
-      "Âge de l'enfant": f.age.value || "—",
-      "Téléphone": f.telephone.value || "—",
-      "E-mail": f.email.value || "—",
-      "À recontacter": rappel === "Par téléphone"
-        ? "Par téléphone : appeler le " + (f.telephone.value || "(numéro non indiqué)")
-        : "Par e-mail : répondre à " + (f.email.value || "(e-mail non indiqué)"),
-      "Message": f.message.value || "—",
-      _subject: `Site web : ${f.objet.value} – ${f.nom.value} (${rappel.toLowerCase()})`,
-      _template: "table",
-      _captcha: "false",
-    };
-    if (f.email.value) data._replyto = f.email.value;
     try {
-      // Web3Forms si le club a renseigné sa clé (site pilote, onglet Club), sinon FormSubmit
-      const web3 = !!(CLUB.cleFormulaire || "").trim();
-      const corps = web3
-        ? { ...data, access_key: CLUB.cleFormulaire.trim(), subject: data._subject, from_name: "Site Rougemont Triathlon", ...(f.email.value ? { replyto: f.email.value } : {}) }
-        : data;
-      if (web3) for (const k of ["_subject", "_template", "_captcha", "_replyto"]) delete corps[k];
-      const res = await fetch(web3 ? "https://api.web3forms.com/submit" : "https://formsubmit.co/ajax/" + CLUB.email.trim(), {
+      const res = await fetch("/api/demande", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(corps),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nom: f.nom.value, age: f.age.value, telephone: f.telephone.value, email: f.email.value,
+          rappel, objet: f.objet.value, message: f.message.value, _honey: f._honey.value,
+        }),
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok || String(json.success) !== "true") throw new Error(json.message || res.status);
+      if (!res.ok || !json.ok) throw new Error(json.error || res.status);
       f.reset();
       show(`Merci ! Votre demande a bien été envoyée. Le club vous recontactera ${rappel.toLowerCase()} très rapidement.`, true);
     } catch (err) {
       console.warn("Envoi du formulaire impossible", err);
-      // Tant que le club n'a pas activé le formulaire, le service d'envoi refuse les demandes
-      const aActiver = /activ/i.test(String(err && err.message));
-      show(aActiver
-        ? `Le formulaire n'est pas encore activé : le club vient de recevoir un mail d'activation sur ${CLUB.email}. En attendant, vous pouvez joindre le club au ${CLUB.telephone}.`
-        : `L'envoi n'a pas fonctionné. Vous pouvez joindre le club directement au ${CLUB.telephone} ou à ${CLUB.email}.`, false);
+      show(`L'envoi n'a pas fonctionné. Vous pouvez joindre le club directement au ${CLUB.telephone} ou à ${CLUB.email}.`, false);
     } finally {
       btn.disabled = false;
       btn.textContent = "Envoyer la demande";

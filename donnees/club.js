@@ -20,11 +20,9 @@ const CLUB = {
   affiliationFFTRI: "2356",
 
   // Espace licences de la fédération (bouton « Se licencier au club »)
-  lienLicenceFFTRI: "https://espacetri.fftri.com/users/user/login",
-
-  // Clé Web3Forms du formulaire de contact (reçue par mail sur web3forms.com,
-  // elle n'est pas secrète). Vide : le formulaire passe par FormSubmit.
-  cleFormulaire: "",
+  lienLicenceFFTRI: "https://espacetri.fftri.com/",
+  // Pass Club FFTRI : un mois gratuit pour essayer avant de prendre la licence
+  lienPassClub: "https://espacetri.fftri.com/",
 
   // Texte affiché en bas de chaque page. Laisse "" pour ne rien afficher.
   credit: "",

@@ -43,6 +43,7 @@
   </header>
 
   <nav class="adm-tabs container">
+    <button data-tab="demandes">Demandes <span class="badge" id="demandes-badge" hidden></span></button>
     <button class="active" data-tab="actus">Actualités</button>
     <button data-tab="photos">Photos</button>
     <button data-tab="planning">Planning</button>
@@ -51,6 +52,30 @@
   </nav>
 
   <main class="container adm-main">
+
+    <!-- DEMANDES -->
+    <section data-panel="demandes" hidden>
+      <div class="adm-head">
+        <div><h2>Demandes</h2><p>Les demandes envoyées avec le formulaire de la page Contact, de la plus récente à la plus ancienne.</p></div>
+        <button class="btn btn--outline btn--sm" id="demandes-refresh" type="button">Actualiser</button>
+      </div>
+      <div id="demandes-list"></div>
+
+      <div class="adm-card adm-form" style="margin-top:28px">
+        <h3>Être prévenu par mail</h3>
+        <p class="aide" id="notif-etat"></p>
+        <ol class="aide">
+          <li>Créez un compte gratuit sur <a href="https://resend.com/signup" target="_blank" rel="noopener">resend.com</a> avec l'adresse du club (<strong id="notif-email"></strong>).</li>
+          <li>Dans Resend, menu <strong>API Keys</strong> → <strong>Create API Key</strong>, puis copiez la clé (elle commence par « re_ »).</li>
+          <li>Collez-la ci-dessous, cliquez sur « Enregistrer », puis sur « Envoyer un mail d'essai ».</li>
+        </ol>
+        <label>Clé Resend<input id="notif-cle" placeholder="re_…" autocomplete="off" spellcheck="false"></label>
+        <div class="adm-form__actions">
+          <button class="btn btn--red" id="notif-save" type="button">Enregistrer</button>
+          <button class="btn btn--outline" id="notif-essai" type="button">Envoyer un mail d'essai</button>
+        </div>
+      </div>
+    </section>
 
     <!-- ACTUALITÉS -->
     <section data-panel="actus">
@@ -191,10 +216,10 @@
           <label>Page Facebook<input data-club-f="facebook" type="url" placeholder="https://"></label>
           <label>Compte Instagram<input data-club-f="instagram" type="url" placeholder="https://"></label>
         </div>
-        <label>Lien « Se licencier au club » (FFTRI)<input data-club-f="lienLicenceFFTRI" type="url" placeholder="https://"></label>
-
-        <h3>Formulaire de contact</h3>
-        <label>Clé Web3Forms (reçue par mail après inscription gratuite sur web3forms.com)<input data-club-f="cleFormulaire" placeholder="Ex : 1a2b3c4d-…" autocomplete="off" spellcheck="false"></label>
+        <div class="row3">
+          <label>Lien « Se licencier au club » (FFTRI)<input data-club-f="lienLicenceFFTRI" type="url" placeholder="https://"></label>
+          <label>Lien « Essai gratuit 1 mois » (Pass Club FFTRI)<input data-club-f="lienPassClub" type="url" placeholder="https://"></label>
+        </div>
 
         <h3>Le bureau</h3>
         <div class="table-wrap">

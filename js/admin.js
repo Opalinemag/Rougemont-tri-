@@ -126,6 +126,7 @@ async function start() {
   renderSponsorsAdmin();
   renderMaillot();
   renderClub();
+  chargerDemandes();
 }
 
 /* ---------- Onglets ---------- */
@@ -458,6 +459,77 @@ $("#club-save").addEventListener("click", async () => {
   }).filter(p => p.nom);
   await save("Infos du club enregistrées");
   renderClub();
+});
+
+/* ---------- Demandes (formulaire de la page Contact) ---------- */
+let demandes = [];
+const dateHeure = iso => new Date(iso).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+const telLien = t => "tel:" + String(t).replace(/[^\d+]/g, "");
+
+async function chargerDemandes() {
+  try {
+    const r = await api("/api/demande");
+    demandes = r.demandes || [];
+    $("#notif-email").textContent = r.email;
+    $("#notif-etat").innerHTML = r.notification
+      ? `<strong style="color:#1a7f37">Notification activée :</strong> chaque nouvelle demande est envoyée à ${esc(r.email)}.`
+      : `<strong style="color:#c0392b">Notification non activée.</strong> Les demandes arrivent ici ; pour les recevoir aussi par mail, suivez ces 3 étapes.`;
+    renderDemandes();
+  } catch (e) { toast("Impossible de lire les demandes : " + e.message, true); }
+}
+function renderDemandes() {
+  const nonLues = demandes.filter(d => !d.lu).length;
+  const badge = $("#demandes-badge");
+  badge.hidden = !nonLues;
+  badge.textContent = nonLues;
+  $("#demandes-list").innerHTML = demandes.length ? demandes.map(d => `
+    <article class="adm-card demande${d.lu ? " is-lu" : ""}" data-id="${esc(d.id)}">
+      <div class="demande__tete">
+        <div><strong>${esc(d.nom)}</strong> · ${esc(d.objet)}${d.lu ? "" : ' <span class="badge">Nouvelle</span>'}<br><small>${esc(dateHeure(d.date))}</small></div>
+        <div class="demande__actions">
+          <button class="btn btn--outline btn--xs" data-lu type="button">${d.lu ? "Marquer non traitée" : "Marquer traitée"}</button>
+          <button class="btn btn--danger btn--xs" data-suppr type="button">Supprimer</button>
+        </div>
+      </div>
+      <ul class="demande__infos">
+        ${d.age ? `<li><span>Âge</span>${esc(d.age)}</li>` : ""}
+        ${d.telephone ? `<li><span>Téléphone</span><a href="${telLien(d.telephone)}">${esc(d.telephone)}</a></li>` : ""}
+        ${d.email ? `<li><span>E-mail</span><a href="mailto:${esc(d.email)}?subject=${encodeURIComponent("Rougemont Triathlon – votre demande")}">${esc(d.email)}</a></li>` : ""}
+        ${d.rappel ? `<li><span>Recontacter</span>${esc(d.rappel)}</li>` : ""}
+      </ul>
+      ${d.message ? `<p class="demande__message">${esc(d.message)}</p>` : ""}
+    </article>`).join("") : `<p class="empty">Aucune demande pour le moment.</p>`;
+}
+$("#demandes-refresh").addEventListener("click", chargerDemandes);
+$("#demandes-list").addEventListener("click", async e => {
+  const carte = e.target.closest("[data-id]");
+  if (!carte) return;
+  const d = demandes.find(x => x.id === carte.dataset.id);
+  try {
+    if (e.target.closest("[data-lu]")) {
+      await api("/api/demande", { action: "lu", id: d.id, lu: !d.lu });
+      d.lu = !d.lu;
+    } else if (e.target.closest("[data-suppr]")) {
+      if (!confirm(`Supprimer la demande de ${d.nom} ?`)) return;
+      await api("/api/demande", { action: "supprimer", id: d.id });
+      demandes = demandes.filter(x => x !== d);
+    } else return;
+    renderDemandes();
+  } catch (ex) { toast("Échec : " + ex.message, true); }
+});
+$("#notif-save").addEventListener("click", async () => {
+  try {
+    await api("/api/demande", { action: "reglage", cleNotification: $("#notif-cle").value.trim() });
+    $("#notif-cle").value = "";
+    toast("Réglage enregistré");
+    chargerDemandes();
+  } catch (ex) { toast("Échec : " + ex.message, true); }
+});
+$("#notif-essai").addEventListener("click", async () => {
+  try {
+    const r = await api("/api/demande", { action: "essai" });
+    toast("Mail d'essai envoyé à " + r.email);
+  } catch (ex) { toast("Le mail d'essai n'est pas parti : " + ex.message, true); }
 });
 
 /* ---------- Démarrage ---------- */
