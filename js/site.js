@@ -66,7 +66,7 @@ function renderLayout() {
       <div>
         <img src="images/logo.png" alt="Rougemont Triathlon" class="footer__logo">
         <p>Le sport ensemble, l'aventure en équipe ! Duathlon, course à pied, vélo et Bike &amp; Run, avec une place privilégiée pour les jeunes.</p>
-        <p class="footer__fftri">Club affilié à la Fédération Française de Triathlon (FFTri)</p>
+        <p class="footer__fftri">Club affilié à la Fédération Française de Triathlon (FFTRI)${CLUB.affiliationFFTRI ? " – N°" + esc(CLUB.affiliationFFTRI) : ""}</p>
       </div>
       <div>
         <h4>Le site</h4>
@@ -86,7 +86,7 @@ function renderLayout() {
       </div>
     </div>
     <div class="container footer__bottom">
-      <span>© ${new Date().getFullYear()} ${esc(CLUB.nom)}</span>
+      <span>© ${new Date().getFullYear()} ${esc(CLUB.nom)}${CLUB.forme ? " · " + esc(CLUB.forme) : ""}${CLUB.rna ? " · RNA " + esc(CLUB.rna) : ""}${CLUB.siret ? " · SIRET " + esc(CLUB.siret) : ""}</span>
       ${CLUB.credit ? `<span>${esc(CLUB.credit)}</span>` : ""}
       <a href="admin.html" class="admin-btn" rel="nofollow">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zm-7-2a2 2 0 1 1 4 0v2h-4V7zm3 9.7V18h-2v-1.3a1.5 1.5 0 1 1 2 0z"/></svg>
@@ -104,6 +104,9 @@ function renderLayout() {
         <span class="social">${ICONES[k]}</span>
         <span><strong>${label}</strong><small>${url ? "Suivre le club" : "Bientôt disponible"}</small></span>
       </a>`).join("");
+  });
+  document.querySelectorAll("[data-licence]").forEach(el => {
+    if (CLUB.lienLicenceFFTRI) el.href = CLUB.lienLicenceFFTRI; else el.remove();
   });
   document.querySelectorAll("[data-club]").forEach(el => {
     const k = el.dataset.club;
@@ -182,7 +185,12 @@ function renderTrainings(list, info) {
             <td data-label="Lieu">${esc(s.lieu)}${s.note ? `<small>${esc(s.note)}</small>` : ""}</td>
           </tr>`).join("")}</tbody>`).join("")}
       </table>`;
-  document.querySelectorAll("[data-planning]").forEach(el => { el.innerHTML = html; });
+  // Notes fixes sous le planning (mauvais temps, section adultes)
+  const notes = [
+    typeof NOTE_MAUVAIS_TEMPS !== "undefined" && NOTE_MAUVAIS_TEMPS ? `<p class="planning-note planning-note--meteo"><strong>Mauvais temps :</strong> ${esc(NOTE_MAUVAIS_TEMPS)}</p>` : "",
+    typeof NOTE_ADULTES !== "undefined" && NOTE_ADULTES ? `<p class="planning-note">${esc(NOTE_ADULTES)}</p>` : "",
+  ].join("");
+  document.querySelectorAll("[data-planning]").forEach(el => { el.innerHTML = html + (sessions.length ? notes : ""); });
 }
 
 // Contenu : celui de l'espace admin s'il existe, sinon les fichiers du dossier "donnees"

@@ -10,13 +10,26 @@
    ===================================================================== */
 const ACTUALITES = [
   {
-    date: "2026-10-17",
+    date: "2026-11-02",
+    titre: "C'est parti : premier entraînement le mercredi 4 novembre",
+    categorie: "Entraînements",
+    image: "images/depart-velo.jpg",
+    resume: "Les jeunes de l'École de triathlon se retrouvent pour leur premier entraînement officiel le mercredi 4 novembre, de 14h00 à 16h00.",
+    texte: [
+      "Le premier entraînement officiel du Rougemont Triathlon aura lieu le mercredi 4 novembre 2026, de 14h00 à 16h00, sur le terrain annexe de football de Rougemont (terrain en schiste).",
+      "Les jeunes s'entraîneront ensuite chaque mercredi de 14h00 à 16h00 et chaque samedi de 10h00 à 11h30, au départ de la Voie Verte, en face de la pharmacie de Rougemont.",
+      "En cas de mauvais temps ou de températures trop basses, les séances pourront se tenir dans la salle située près de la salle des fêtes, sous réserve de disponibilité.",
+      "Le club compte déjà ses premiers jeunes licenciés. Pour rejoindre l'aventure, contactez-nous !",
+    ],
+  },
+  {
+    date: "2026-10-19",
     titre: "Le Rougemont Triathlon est officiellement créé",
     categorie: "Vie du club",
     image: "images/coachs.jpg",
-    resume: "Le 17 octobre 2026, l'association Rougemont Triathlon a vu le jour. Premières séances en novembre, cap sur 2027 !",
+    resume: "Le 19 octobre 2026, l'association Rougemont Triathlon a vu le jour. Premières séances en novembre, cap sur 2027 !",
     texte: [
-      "C'est officiel : le club Rougemont Triathlon a été créé le 17 octobre 2026 à Rougemont (25680).",
+      "C'est officiel : le club Rougemont Triathlon a été créé le 19 octobre 2026 à Rougemont (25680). Il est affilié à la Fédération Française de Triathlon (FFTRI) sous le n°2356.",
       "Le bureau de l'association est composé d'Arnaud Crozat (président, titulaire du BF2 FFTri, initiateur-éducateur triathlon), de Mélanie Gervais (trésorière) et de Marie-Christine Crozat (secrétaire).",
       "Notre ambition : proposer un triathlon accessible à tous, enfants comme adultes, dans un esprit de convivialité et de partage. Les premières séances démarrent en novembre 2026, et nous avons de beaux projets pour la saison 2027.",
       "Pour toute question ou inscription, contactez-nous par téléphone ou par e-mail.",

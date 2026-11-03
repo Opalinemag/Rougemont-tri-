@@ -18,6 +18,13 @@ const INFO_DU_MOMENT = "";
 
 // N'afficher que les créneaux CONFIRMÉS. Tant que la liste est vide, le site
 // affiche « Contactez-nous pour connaître les horaires ».
-// Exemple de ligne :
-// { jour: "Mercredi", debut: "14h00", fin: "15h30", groupe: "Jeunes 6 – 11 ans", activite: "Course & vélo", lieu: "Rougemont", note: "Casque obligatoire", annule: false },
-const ENTRAINEMENTS = [];
+const ENTRAINEMENTS = [
+  { jour: "Mercredi", debut: "14h00", fin: "16h00", groupe: "Jeunes – École de triathlon", activite: "Duathlon, course à pied, vélo",
+    lieu: "Terrain annexe de football de Rougemont (terrain en schiste)", note: "Par mauvais temps : voir l'encadré ci-dessous", annule: false },
+  { jour: "Samedi", debut: "10h00", fin: "11h30", groupe: "Jeunes – École de triathlon", activite: "Vélo et course à pied",
+    lieu: "Départ de la Voie Verte, en face de la pharmacie de Rougemont", note: "", annule: false },
+];
+
+// Textes fixes affichés sous le planning (laisser "" pour ne rien afficher)
+const NOTE_MAUVAIS_TEMPS = "En cas de mauvais temps ou de températures trop basses, les entraînements pourront être organisés temporairement dans la salle située près de la salle des fêtes de Rougemont, sous réserve de disponibilité, conformément à l'accord donné par Monsieur le Maire. Le club n'est pas prioritaire sur l'utilisation de cette salle.";
+const NOTE_ADULTES = "Section adultes : horaires en cours d'élaboration. Le planning adultes sera communiqué prochainement en fonction des disponibilités et des groupes constitués.";
