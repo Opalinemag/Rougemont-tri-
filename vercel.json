@@ -1,6 +1,27 @@
 {
   "cleanUrls": false,
   "headers": [
-    { "source": "/admin.html", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }] }
+    {
+      "source": "/admin.html",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/:chemin*",
+      "has": [
+        {
+          "type": "host",
+          "value": "rougemont-tri.vercel.app"
+        }
+      ],
+      "destination": "https://rougemont-triathlon.vercel.app/:chemin*",
+      "permanent": false
+    }
   ]
 }

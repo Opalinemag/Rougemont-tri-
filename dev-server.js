@@ -1,14 +1,13 @@
 // Serveur de test en local (pas utilisé sur Vercel).
 // Lancer :  npm run dev   puis ouvrir http://localhost:3000
-// Connexion admin en local : ADMIN_USER / ADMIN_PASSWORD, sinon "admin" / "test-local".
+// Connexion admin en local : ADMIN_COMPTES, sinon le compte d'essai "admin" / "test-local".
 import http from "node:http";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 process.chdir(path.dirname(fileURLToPath(import.meta.url)));
-process.env.ADMIN_USER ||= "admin";
-process.env.ADMIN_PASSWORD ||= "test-local";
+process.env.ADMIN_COMPTES ||= "admin:test-local";
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = process.cwd();

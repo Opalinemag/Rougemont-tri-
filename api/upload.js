@@ -7,7 +7,7 @@ const TYPES = ["image/jpeg", "image/png"];
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Méthode non autorisée" });
-  if (!isAuthorized(req)) return res.status(401).json({ error: "Session expirée, reconnectez-vous." });
+  if (!(await isAuthorized(req))) return res.status(401).json({ error: "Session expirée, reconnectez-vous." });
   try {
     const { data, type } = req.body || {};
     if (!TYPES.includes(type) || typeof data !== "string") return res.status(400).json({ error: "Image invalide." });

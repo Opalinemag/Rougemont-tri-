@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       return res.status(200).json((await readContent()) || {});
     }
     if (req.method === "POST") {
-      if (!isAuthorized(req)) return res.status(401).json({ error: "Session expirée, reconnectez-vous." });
+      if (!(await isAuthorized(req))) return res.status(401).json({ error: "Session expirée, reconnectez-vous." });
       const b = req.body || {};
       const content = {
         actualites: asArray(b.actualites),
