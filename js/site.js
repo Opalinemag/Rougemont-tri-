@@ -32,6 +32,7 @@ const PAGES = [
   ["entrainements.html", "Entraînements"],
   ["actualites.html", "Actualités"],
   ["partenaires.html", "Partenaires"],
+  ["tenues.html", "Nos tenues"],
   ["contact.html", "Contact"],
 ];
 const PAGES_PIED = [...PAGES.slice(0, 5), ["rejoindre.html", "Rejoindre le club"], ["photos.html", "Photos"], ...PAGES.slice(5)];

@@ -185,9 +185,12 @@ window.initTrifonction3D = function (variante = "garcon") {
 
     const dosOuter = y => (br[y] && br[y].length ? outer(br[y]) : null);
 
-    /* Tube elliptique : moitié avant (face) et moitié arrière (dos) */
-    function tube(prof, prof3d, leg) {
-      const SEG = 72, STEP = 2;
+    /* Tube à section arrondie (super-ellipse, plus proche d'un corps qu'une ellipse) :
+       moitié avant (photo de face) et moitié arrière (photo de dos), avec une
+       profondeur différente devant (poitrine, ventre) et derrière (dos, fessiers). */
+    function tube(prof, prof3d, leg, rondeur = 2.5) {
+      const SEG = 72, STEP = 2, e = 2 / rondeur;
+      const puis = v => Math.sign(v) * Math.abs(v) ** e;
       const rowsUsed = prof.filter((_, i) => i % STEP === 0 || i === prof.length - 1);
       const make = avant => {
         const pos = [], uv = [], idx = [];
@@ -195,12 +198,13 @@ window.initTrifonction3D = function (variante = "garcon") {
           const p3 = prof3d(p.y, p.hw);
           for (let j = 0; j <= SEG; j++) {
             const a = (avant ? -Math.PI / 2 : Math.PI / 2) + (j / SEG) * Math.PI;
-            const x = p.c + Math.sin(a) * p.hw;
-            const z = Math.cos(a) * p3.prof + p3.dz;
+            const sx = puis(Math.sin(a)), cz = puis(Math.cos(a));
+            const x = p.c + sx * p.hw;
+            const z = cz * (cz >= 0 ? p3.av : p3.ar) + p3.dz;
             pos.push(wx(x), wy(p.y), z);
             // Répartition du motif selon l'angle et non en projection plate : sinon les
             // pixels du bord sont étirés sur les flancs et forment des traînées verticales.
-            const f = Math.sin(a), lin = (2 * Math.asin(f)) / Math.PI;
+            const f = Math.max(-1, Math.min(1, sx)), lin = (2 * Math.asin(f)) / Math.PI;
             const xc = p.c + (p.hw - 2) * (0.4 * f + 0.6 * lin);
             if (avant) {
               uv.push(xc / W, 1 - p.y / H);
@@ -230,66 +234,74 @@ window.initTrifonction3D = function (variante = "garcon") {
 
     const group = new THREE.Group();
     const add = (geo, mat) => { const m = new THREE.Mesh(geo, mat); group.add(m); return m; };
+    const cloche = (t, centre, largeur) => Math.exp(-((t - centre) ** 2) / largeur);
 
-    /* Torse : de l'encolure à la fourche */
+    /* Torse : de l'encolure à la fourche, avec les volumes d'un vrai corps */
     const torse = profil(top, fourche, y => (fr[y].length ? outer(fr[y]) : null));
+    const poitrine = variante === "fille" ? 0.1 : 0.07;
     const profTorse = (y, hw) => {
-      const t = (y - top) / Math.max(1, fourche - top);           // 0 = épaules, 1 = bassin
-      const ratio = 0.6 + 0.12 * Math.sin(t * Math.PI);            // épaisseur relative
-      const poitrine = 0.06 * Math.exp(-((t - 0.28) ** 2) / 0.02); // léger volume pectoral
-      return { prof: hw * K * ratio + poitrine * 0.5, dz: poitrine * 0.5 };
+      const t = (y - top) / Math.max(1, fourche - top);           // 0 = épaules, 1 = entrejambe
+      // en haut, la tenue passe par-dessus les épaules : avant et arrière se rejoignent
+      const epaules = 0.35 + 0.65 * Math.sqrt(Math.min(1, t / 0.1));
+      const base = hw * K * (0.62 + 0.08 * Math.sin(t * Math.PI)) * epaules;
+      return {
+        av: base + (poitrine * cloche(t, 0.27, 0.012) + 0.02 * cloche(t, 0.62, 0.03)) * epaules, // poitrine, ventre
+        ar: base + (0.03 * cloche(t, 0.2, 0.02) + 0.1 * cloche(t, 0.96, 0.012)) * epaules,       // omoplates, fessiers
+        dz: 0,
+      };
     };
     const [tf, tb] = tube(torse, profTorse, null);
     add(tf, matFace); add(tb, matDos);
 
-    /* Jambes : deux tubes depuis la fourche */
+    /* Jambes de la tenue : deux tubes depuis la fourche, qui prolongent bassin et fessiers */
     const jambe = cote => {
       const pickF = y => { const s = fr[y]; return s.length >= 2 ? (cote < 0 ? s[0] : s[s.length - 1]) : null; };
       const pickB = y => { const s = br[y]; return s && s.length >= 2 ? (cote < 0 ? s[s.length - 1] : s[0]) : null; };
       const prof = profil(fourche, bot, pickF);
-      finJambe[cote] = prof[prof.length - 1];
-      // en haut, la cuisse est aussi épaisse que le bassin (pas de marche de profil)
+      const bas = prof.slice(-40);
+      finJambe[cote] = { ...prof[prof.length - 1], hwMoy: bas.reduce((m, p) => m + p.hw, 0) / bas.length };
       return tube(prof, (y, hw) => {
-        const t = Math.min(1, (y - fourche) / 140);
-        return { prof: hw * K * (0.92 + 0.33 * (1 - t) ** 2), dz: -0.02 };
-      }, { dos: pickB });
+        const t = Math.min(1, (y - fourche) / 140), haut = (1 - t) ** 2;
+        return { av: hw * K * (0.92 + 0.3 * haut), ar: hw * K * 0.92 + 0.12 * haut, dz: -0.02 };
+      }, { dos: pickB }, 2.15);
     };
     const finJambe = {};
     for (const cote of [-1, 1]) { const [f, b] = jambe(cote); add(f, matFace); add(b, matDos); }
 
-    /* ---------- Mannequin : corps sous la tenue, cou, épaules, cuisses ---------- */
+    /* ---------- Mannequin : corps complet sous la tenue ---------- */
     const peau = new THREE.Group();
-    tube(torse, (y, hw) => { const p = profTorse(y, hw); return { prof: p.prof * 0.96, dz: p.dz }; }, null)
-      .forEach(g => { const m = new THREE.Mesh(g, matPeau); m.scale.set(0.97, 1, 1); peau.add(m); });
-    const ep = torse[Math.min(torse.length - 1, 30)];
-    const yEp = wy(top + 18), demiEp = ep.hw * K;
-    const cou = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.16, 0.4, 32), matPeau);
-    cou.position.set(wx(ep.c), yEp + 0.16, 0);
-    peau.add(cou);
-    const dessus = new THREE.Mesh(new THREE.SphereGeometry(0.13, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), matPeau);
-    dessus.position.set(wx(ep.c), yEp + 0.36, 0);
-    peau.add(dessus);
-    // Aisselle : la ligne la plus large du haut du torse, sous l'emmanchure
-    const aisselle = torse.slice(0, Math.round(torse.length * 0.4)).reduce((m, p) => (p.hw > m.hw ? p : m));
+    const corps = (geo, x, y, z, sx = 1, sy = 1, sz = 1, rz = 0) => {
+      const m = new THREE.Mesh(geo, matPeau);
+      m.position.set(x, y, z); m.scale.set(sx, sy, sz); m.rotation.z = rz;
+      peau.add(m);
+      return m;
+    };
+    // Torse sous la tenue (visible aux emmanchures et à l'encolure)
+    tube(torse, (y, hw) => { const p = profTorse(y, hw); return { av: p.av * 0.96, ar: p.ar * 0.96, dz: 0 }; }, null)
+      .forEach(g => corps(g, 0, 0, 0, 0.97));
     // Formes de révolution lisses : profil (rayon, hauteur) tourné autour de l'axe
-    const tour = pts => new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(Math.max(r, 0.001), y)), 48);
-    // Bras de mannequin : épaule arrondie, bras légèrement effilé, coupe adoucie
-    const bras = tour([[0, 0.12], [0.07, 0.115], [0.115, 0.08], [0.132, 0.02], [0.128, -0.1], [0.118, -0.24], [0.11, -0.34], [0.1, -0.375], [0.06, -0.39], [0, -0.392]]);
-    for (const s of [-1, 1]) {
-      const b = new THREE.Mesh(bras, matPeau);
-      b.scale.set(1, 1, 0.9);
-      b.rotation.z = s * 0.2; // les bras s'écartent un peu du corps
-      // le bras sort de l'emmanchure : à hauteur d'aisselle, juste au bord du torse
-      b.position.set(wx(aisselle.c) + s * (aisselle.hw * K - 0.03), wy(aisselle.y) + 0.2, -0.01);
-      peau.add(b);
+    const tour = pts => new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(Math.max(r, 0.001), y)), 56);
+    const aisselle = torse.slice(0, Math.round(torse.length * 0.4)).reduce((m, p) => (p.hw > m.hw ? p : m));
+    const cx = wx(aisselle.c), demi = aisselle.hw * K, yHaut = wy(top);
+    const epaisseur = profTorse(aisselle.y, aisselle.hw).av;
 
-      // Cuisse : prolonge la jambe de la tenue, même section, fin arrondie
-      const fin = finJambe[s];
-      const r = fin.hw * K * 0.95;
-      const cuisse = new THREE.Mesh(tour([[r, 0.08], [r * 0.98, -0.06], [r * 0.93, -0.22], [r * 0.86, -0.3], [r * 0.6, -0.335], [0, -0.34]]), matPeau);
-      cuisse.scale.set(1, 1, 0.92); // section elliptique, comme la jambe
-      cuisse.position.set(wx(fin.c), wy(bot), -0.02);
-      peau.add(cuisse);
+    // Épaules : une forme arrondie d'une épaule à l'autre, qui ressort par les emmanchures
+    corps(new THREE.SphereGeometry(1, 48, 32), cx, yHaut - 0.22, -0.02, demi + 0.04, 0.17, epaisseur * 0.85);
+    // Cou et tête de mannequin
+    corps(tour([[0.17, 0], [0.15, 0.12], [0.14, 0.3], [0.15, 0.4]]), cx, yHaut - 0.08, -0.02);
+    corps(new THREE.SphereGeometry(0.3, 48, 32), cx, yHaut + 0.58, 0.01, 0.76, 1.04, 0.88);
+    // Bras jusqu'au coude : épaule arrondie, biceps, coude, fin arrondie
+    const bras = tour([[0, 0.17], [0.09, 0.16], [0.15, 0.11], [0.165, 0.03], [0.16, -0.12], [0.15, -0.35],
+      [0.13, -0.6], [0.115, -0.78], [0.11, -0.86], [0.09, -0.93], [0.05, -0.965], [0, -0.97]]);
+    for (const s of [-1, 1]) {
+      corps(bras, cx + s * (demi + 0.06), yHaut - 0.26, -0.03, 1, 1, 0.9, s * 0.08);
+      // Jambe : de l'ourlet de la tenue au mollet (genou, mollet, fin arrondie)
+      // largeur moyenne du bas de la cuisse (l'ourlet dessiné est souvent rétréci)
+      const fin = finJambe[s], r0 = fin.hwMoy * K * 0.97;
+      const jambeNue = tour([[r0, 0.1], [r0 * 0.97, -0.1], [r0 * 0.88, -0.32], [r0 * 0.8, -0.52], [r0 * 0.72, -0.66],
+        [r0 * 0.74, -0.74], [r0 * 0.8, -0.86], [r0 * 0.8, -0.96], [r0 * 0.7, -1.12], [r0 * 0.56, -1.28],
+        [r0 * 0.5, -1.36], [r0 * 0.4, -1.41], [r0 * 0.2, -1.44], [0, -1.45]]);
+      corps(jambeNue, wx(fin.c), wy(bot), -0.02, 1, 1, 0.92, -s * 0.04); // genoux légèrement rapprochés
     }
     group.add(peau);
     scene.add(group);
@@ -304,8 +316,13 @@ window.initTrifonction3D = function (variante = "garcon") {
     g2.fillStyle = grad; g2.fillRect(0, 0, 128, 128);
     const ombre = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.7), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sol), transparent: true, depthWrite: false }));
     ombre.rotation.x = -Math.PI / 2;
-    ombre.position.y = wy(bot) - 0.4;
+    ombre.position.y = wy(bot) - 1.5;
     scene.add(ombre);
+
+    // Cadrage : de la tête au bas des jambes
+    const yMin = wy(bot) - 1.5, yMax = yHaut + 0.95;
+    camera.position.set(0, (yMin + yMax) / 2 + 0.1, ((yMax - yMin) / 2 + 0.3) / Math.tan((28 / 2) * Math.PI / 180));
+    camera.lookAt(0, (yMin + yMax) / 2, 0);
 
     /* ---------- Taille et rotation ---------- */
     function resize() {
