@@ -286,7 +286,8 @@ window.initTrifonction3D = function (variante = "garcon") {
     const epaisseur = profTorse(aisselle.y, aisselle.hw).av;
 
     // Épaules : une forme arrondie d'une épaule à l'autre, qui ressort par les emmanchures
-    corps(new THREE.SphereGeometry(1, 48, 32), cx, yHaut - 0.22, -0.02, demi + 0.04, 0.17, epaisseur * 0.85);
+    // (plus étroite que le torse : elle ne dépasse pas en barre au-dessus de la tenue)
+    corps(new THREE.SphereGeometry(1, 48, 32), cx, yHaut - 0.26, -0.02, demi - 0.03, 0.15, epaisseur * 0.82);
     // Cou et tête de mannequin
     corps(tour([[0.17, 0], [0.15, 0.12], [0.14, 0.3], [0.15, 0.4]]), cx, yHaut - 0.08, -0.02);
     corps(new THREE.SphereGeometry(0.3, 48, 32), cx, yHaut + 0.58, 0.01, 0.76, 1.04, 0.88);
@@ -294,7 +295,8 @@ window.initTrifonction3D = function (variante = "garcon") {
     const bras = tour([[0, 0.17], [0.09, 0.16], [0.15, 0.11], [0.165, 0.03], [0.16, -0.12], [0.15, -0.35],
       [0.13, -0.6], [0.115, -0.78], [0.11, -0.86], [0.09, -0.93], [0.05, -0.965], [0, -0.97]]);
     for (const s of [-1, 1]) {
-      corps(bras, cx + s * (demi + 0.06), yHaut - 0.26, -0.03, 1, 1, 0.9, s * 0.08);
+      // le haut arrondi du bras forme l'épaule, juste au bord du torse
+      corps(bras, cx + s * (demi + 0.01), yHaut - 0.27, -0.03, 1, 1, 0.88, s * 0.07);
       // Jambe : de l'ourlet de la tenue au mollet (genou, mollet, fin arrondie)
       // largeur moyenne du bas de la cuisse (l'ourlet dessiné est souvent rétréci)
       const fin = finJambe[s], r0 = fin.hwMoy * K * 0.97;
