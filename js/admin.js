@@ -1,4 +1,10 @@
 /* Espace administrateur – Rougemont Triathlon */
+
+// L'ancienne adresse rougemont-tri.vercel.app renvoie vers le site officiel
+if (location.hostname === "rougemont-tri.vercel.app") {
+  location.replace("https://rougemont-triathlon.vercel.app" + location.pathname + location.search + location.hash);
+}
+
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];

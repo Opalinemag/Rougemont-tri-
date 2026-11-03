@@ -1,6 +1,10 @@
 /* Rougemont Triathlon – fonctionnement du site.
    Il n'est pas nécessaire de modifier ce fichier : les contenus
    (horaires, actualités, photos, coordonnées) sont dans le dossier "donnees". */
+// L'ancienne adresse rougemont-tri.vercel.app renvoie vers le site officiel
+if (location.hostname === "rougemont-tri.vercel.app") {
+  location.replace("https://rougemont-triathlon.vercel.app" + location.pathname + location.search + location.hash);
+}
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -50,7 +54,7 @@ function renderLayout() {
     <div class="mainbar">
       <div class="container mainbar__inner">
         <a href="index.html" class="brand">
-          <img src="images/logo.png" alt="">
+          <img src="images/logo.svg" alt="">
           <span><strong>Rougemont</strong><em>Triathlon</em></span>
         </a>
         <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -64,7 +68,7 @@ function renderLayout() {
   $("#site-footer").innerHTML = `
     <div class="container footer__grid">
       <div>
-        <img src="images/logo.png" alt="Rougemont Triathlon" class="footer__logo">
+        <img src="images/logo.svg" alt="Rougemont Triathlon" class="footer__logo">
         <p>Le sport ensemble, l'aventure en équipe ! Duathlon, course à pied, vélo et Bike &amp; Run, avec une place privilégiée pour les jeunes.</p>
         <p class="footer__fftri">Club affilié à la Fédération Française de Triathlon (FFTRI)${CLUB.affiliationFFTRI ? " – N°" + esc(CLUB.affiliationFFTRI) : ""}</p>
       </div>
