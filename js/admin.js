@@ -111,6 +111,12 @@ async function start() {
     info: saved.info ?? (typeof INFO_DU_MOMENT !== "undefined" ? INFO_DU_MOMENT : ""),
     sponsors: saved.sponsors || (typeof SPONSORS !== "undefined" ? structuredClone(SPONSORS) : []),
     maillot: saved.maillot || (typeof MAILLOT !== "undefined" ? structuredClone(MAILLOT) : { image: "", texte: "" }),
+    club: { ...(typeof CLUB !== "undefined" ? CLUB : {}), ...(saved.club || {}) },
+    notes: saved.notes || {
+      meteo: typeof NOTE_MAUVAIS_TEMPS !== "undefined" ? NOTE_MAUVAIS_TEMPS : "",
+      adultes: typeof NOTE_ADULTES !== "undefined" ? NOTE_ADULTES : "",
+    },
+    bureau: saved.bureau || (typeof BUREAU !== "undefined" ? structuredClone(BUREAU) : []),
   };
   $("#login").hidden = true;
   $("#app").hidden = false;
@@ -119,6 +125,7 @@ async function start() {
   renderPlanning();
   renderSponsorsAdmin();
   renderMaillot();
+  renderClub();
 }
 
 /* ---------- Onglets ---------- */
@@ -304,12 +311,15 @@ function rowHtml(s = {}) {
 }
 function renderPlanning() {
   $("#info-input").value = content.info || "";
+  $("#note-meteo").value = content.notes.meteo || "";
+  $("#note-adultes").value = content.notes.adultes || "";
   $("#planning-rows").innerHTML = content.entrainements.map(rowHtml).join("");
 }
 $("#row-add").addEventListener("click", () => $("#planning-rows").insertAdjacentHTML("beforeend", rowHtml({ jour: "Mercredi" })));
 $("#planning-rows").addEventListener("click", e => { if (e.target.closest("[data-row-del]")) e.target.closest("tr").remove(); });
 $("#planning-save").addEventListener("click", async () => {
   content.info = $("#info-input").value.trim();
+  content.notes = { meteo: $("#note-meteo").value.trim(), adultes: $("#note-adultes").value.trim() };
   content.entrainements = [...document.querySelectorAll("#planning-rows tr")].map(tr => {
     const o = {};
     tr.querySelectorAll("[data-f]").forEach(el => (o[el.dataset.f] = el.type === "checkbox" ? el.checked : el.value.trim()));
@@ -423,6 +433,31 @@ $("#maillot-remove").addEventListener("click", () => setMaillot(""));
 $("#maillot-save").addEventListener("click", async () => {
   content.maillot.texte = $("#maillot-texte").value.trim();
   await save("Maillot enregistré");
+});
+
+/* ---------- Club : coordonnées, liens, bureau ---------- */
+const membreHtml = (p = {}) => `
+  <tr>
+    <td><input data-b="nom" value="${esc(p.nom)}" placeholder="Prénom Nom"></td>
+    <td><input data-b="role" value="${esc(p.role)}" placeholder="Ex : Trésorière"></td>
+    <td><input data-b="telephone" value="${esc(p.telephone)}" placeholder="06 00 00 00 00"></td>
+    <td><button class="btn btn--danger btn--xs" data-row-del type="button">×</button></td>
+  </tr>`;
+function renderClub() {
+  document.querySelectorAll("[data-club-f]").forEach(el => (el.value = content.club[el.dataset.clubF] || ""));
+  $("#bureau-rows").innerHTML = content.bureau.map(membreHtml).join("");
+}
+$("#bureau-add").addEventListener("click", () => $("#bureau-rows").insertAdjacentHTML("beforeend", membreHtml()));
+$("#bureau-rows").addEventListener("click", e => { if (e.target.closest("[data-row-del]")) e.target.closest("tr").remove(); });
+$("#club-save").addEventListener("click", async () => {
+  document.querySelectorAll("[data-club-f]").forEach(el => (content.club[el.dataset.clubF] = el.value.trim()));
+  content.bureau = [...document.querySelectorAll("#bureau-rows tr")].map(tr => {
+    const o = {};
+    tr.querySelectorAll("[data-b]").forEach(el => (o[el.dataset.b] = el.value.trim()));
+    return o;
+  }).filter(p => p.nom);
+  await save("Infos du club enregistrées");
+  renderClub();
 });
 
 /* ---------- Démarrage ---------- */

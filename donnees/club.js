@@ -25,3 +25,10 @@ const CLUB = {
   // Texte affiché en bas de chaque page. Laisse "" pour ne rien afficher.
   credit: "",
 };
+
+// Le bureau (page « Le club »), modifiable ensuite dans l'espace de gestion
+const BUREAU = [
+  { nom: "Arnaud Crozat", role: "Président fondateur · Entraîneur BF2 FFTRI", telephone: "06 52 85 72 73" },
+  { nom: "Mélanie Gervais", role: "Trésorière", telephone: "06 43 70 17 81" },
+  { nom: "Marie-Christine Crozat Hazard", role: "Secrétaire", telephone: "06 62 14 88 54" },
+];

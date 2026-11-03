@@ -47,6 +47,7 @@
     <button data-tab="photos">Photos</button>
     <button data-tab="planning">Planning</button>
     <button data-tab="sponsors">Sponsors</button>
+    <button data-tab="club">Club</button>
   </nav>
 
   <main class="container adm-main">
@@ -117,6 +118,12 @@
             <tbody id="planning-rows"></tbody>
           </table>
         </div>
+        <label class="block">Note « mauvais temps » sous le planning — laisser vide pour ne rien afficher
+          <textarea id="note-meteo" rows="3"></textarea>
+        </label>
+        <label class="block">Note « section adultes » sous le planning — laisser vide pour ne rien afficher
+          <textarea id="note-adultes" rows="2"></textarea>
+        </label>
         <div class="adm-form__actions">
           <button class="btn btn--outline btn--sm" id="row-add" type="button">+ Ajouter un créneau</button>
           <button class="btn btn--red" id="planning-save" type="button">Enregistrer le planning</button>
@@ -163,11 +170,48 @@
         <div class="adm-form__actions"><button class="btn btn--red" type="button" id="maillot-save">Enregistrer le maillot</button></div>
       </div>
     </section>
+
+    <!-- CLUB -->
+    <section data-panel="club" hidden>
+      <div class="adm-head">
+        <div><h2>Le club</h2><p>Coordonnées, réseaux sociaux et bureau : affichés en haut et en bas de chaque page, et sur la page « Le club ».</p></div>
+      </div>
+      <div class="adm-card adm-form" id="club-form">
+        <h3>Coordonnées</h3>
+        <div class="row3">
+          <label>Téléphone<input data-club-f="telephone"></label>
+          <label>E-mail (reçoit aussi les messages du formulaire)<input data-club-f="email" type="email"></label>
+        </div>
+        <div class="row3">
+          <label>Ville (bandeau du haut)<input data-club-f="ville"></label>
+          <label>Adresse (pied de page)<input data-club-f="adresse"></label>
+        </div>
+        <h3>Liens</h3>
+        <div class="row3">
+          <label>Page Facebook<input data-club-f="facebook" type="url" placeholder="https://"></label>
+          <label>Compte Instagram<input data-club-f="instagram" type="url" placeholder="https://"></label>
+        </div>
+        <label>Lien « Se licencier au club » (FFTRI)<input data-club-f="lienLicenceFFTRI" type="url" placeholder="https://"></label>
+
+        <h3>Le bureau</h3>
+        <div class="table-wrap">
+          <table class="adm-table adm-table--court">
+            <thead><tr><th>Nom</th><th>Rôle</th><th>Téléphone</th><th></th></tr></thead>
+            <tbody id="bureau-rows"></tbody>
+          </table>
+        </div>
+        <div class="adm-form__actions">
+          <button class="btn btn--outline btn--sm" id="bureau-add" type="button">+ Ajouter un membre</button>
+          <button class="btn btn--red" id="club-save" type="button">Enregistrer</button>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
 <div class="toast" id="toast" hidden></div>
 
+<script src="donnees/club.js"></script>
 <script src="donnees/entrainements.js"></script>
 <script src="donnees/actualites.js"></script>
 <script src="donnees/photos.js"></script>

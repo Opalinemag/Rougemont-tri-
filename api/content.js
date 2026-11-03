@@ -4,6 +4,9 @@ import { readContent, writeContent } from "../lib/store.js";
 import { isAuthorized } from "../lib/auth.js";
 
 const asArray = v => (Array.isArray(v) ? v : []);
+const texte = v => String(v ?? "").slice(0, 2000);
+// Champs du club modifiables depuis l'espace de gestion
+const CHAMPS_CLUB = ["telephone", "email", "ville", "adresse", "facebook", "instagram", "lienLicenceFFTRI"];
 
 export default async function handler(req, res) {
   try {
@@ -21,6 +24,9 @@ export default async function handler(req, res) {
         info: String(b.info || ""),
         sponsors: asArray(b.sponsors),
         maillot: { image: String(b.maillot?.image || ""), texte: String(b.maillot?.texte || "") },
+        club: Object.fromEntries(CHAMPS_CLUB.map(k => [k, texte(b.club?.[k])])),
+        notes: { meteo: texte(b.notes?.meteo), adultes: texte(b.notes?.adultes) },
+        bureau: asArray(b.bureau).map(p => ({ nom: texte(p?.nom), role: texte(p?.role), telephone: texte(p?.telephone) })).filter(p => p.nom),
         modifie: new Date().toISOString(),
       };
       await writeContent(content);

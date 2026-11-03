@@ -517,3 +517,11 @@ a.topbar__item:hover { color: var(--white); }
 @media (max-width: 900px) { .atouts { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .atouts { grid-template-columns: 1fr; } }
 .nav .btn { white-space: nowrap; }
+
+/* En-tête : le nom du club et le menu ne se touchent jamais */
+.mainbar__inner { gap: 28px; }
+.brand { flex: none; }
+.nav a:not(.btn) { font-size: 1.04rem; padding: 8px 9px; }
+/* Les longues adresses (mail, liens) passent à la ligne au lieu de déborder */
+p, li, td, dd, figcaption { overflow-wrap: break-word; }
+a[href^="mailto:"] { overflow-wrap: anywhere; }

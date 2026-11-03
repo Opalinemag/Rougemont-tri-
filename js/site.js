@@ -192,8 +192,8 @@ function renderTrainings(list, info) {
       </table>`;
   // Notes fixes sous le planning (mauvais temps, section adultes)
   const notes = [
-    typeof NOTE_MAUVAIS_TEMPS !== "undefined" && NOTE_MAUVAIS_TEMPS ? `<p class="planning-note planning-note--meteo"><strong>Mauvais temps :</strong> ${esc(NOTE_MAUVAIS_TEMPS)}</p>` : "",
-    typeof NOTE_ADULTES !== "undefined" && NOTE_ADULTES ? `<p class="planning-note">${esc(NOTE_ADULTES)}</p>` : "",
+    DATA.notes.meteo ? `<p class="planning-note planning-note--meteo"><strong>Mauvais temps :</strong> ${esc(DATA.notes.meteo)}</p>` : "",
+    DATA.notes.adultes ? `<p class="planning-note">${esc(DATA.notes.adultes)}</p>` : "",
   ].join("");
   document.querySelectorAll("[data-planning]").forEach(el => { el.innerHTML = html + (sessions.length ? notes : ""); });
 }
@@ -206,6 +206,11 @@ const DATA = {
   info: typeof INFO_DU_MOMENT !== "undefined" ? INFO_DU_MOMENT : "",
   sponsors: typeof SPONSORS !== "undefined" ? SPONSORS : [],
   maillot: typeof MAILLOT !== "undefined" ? MAILLOT : {},
+  bureau: typeof BUREAU !== "undefined" ? BUREAU : null,
+  notes: {
+    meteo: typeof NOTE_MAUVAIS_TEMPS !== "undefined" ? NOTE_MAUVAIS_TEMPS : "",
+    adultes: typeof NOTE_ADULTES !== "undefined" ? NOTE_ADULTES : "",
+  },
 };
 async function loadAdminContent() {
   try {
@@ -217,6 +222,13 @@ async function loadAdminContent() {
     if (Array.isArray(c.sponsors)) DATA.sponsors = c.sponsors;
     if (c.maillot && typeof c.maillot === "object") DATA.maillot = c.maillot;
     if (Array.isArray(c.entrainements)) { DATA.entrainements = c.entrainements; DATA.info = c.info || ""; }
+    if (Array.isArray(c.bureau) && c.bureau.length) DATA.bureau = c.bureau;
+    if (c.notes && typeof c.notes === "object") DATA.notes = { meteo: c.notes.meteo || "", adultes: c.notes.adultes || "" };
+    // Coordonnées et réseaux du club : on réaffiche en-tête et pied de page
+    if (c.club && typeof c.club === "object" && typeof CLUB !== "undefined") {
+      for (const [k, v] of Object.entries(c.club)) if (typeof v === "string" && (v || k === "facebook" || k === "instagram" || k === "lienLicenceFFTRI")) CLUB[k] = v;
+      renderLayout();
+    }
   } catch { /* pas de serveur : on garde les fichiers du dossier donnees */ }
 }
 
@@ -432,8 +444,18 @@ function contactForm() {
 renderLayout();
 lightbox();
 contactForm();
+// Bureau de l'association (page « Le club »)
+function renderBureau() {
+  if (!DATA.bureau) return;
+  document.querySelectorAll("[data-bureau]").forEach(el => {
+    el.innerHTML = DATA.bureau.map(p => `
+      <li><strong>${esc(p.nom)}</strong><span>${esc(p.role)}${p.telephone ? `${p.role ? " · " : ""}<a href="${telHref(p.telephone)}">${esc(p.telephone)}</a>` : ""}</span></li>`).join("");
+  });
+}
+
 loadAdminContent().then(() => {
   loadTrainings();
+  renderBureau();
   renderNews();
   renderPhotos();
   renderSponsors();
