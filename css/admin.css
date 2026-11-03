@@ -11,6 +11,7 @@ body.admin { background: var(--bg-soft); min-height: 100vh; }
 .login__card input { display: block; width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #cfd5df; border-radius: 4px; font: inherit; }
 .login__card .btn { width: 100%; justify-content: center; }
 .login__error { color: var(--red); font-weight: 600; margin-top: 14px; }
+.login__error.is-info { color: var(--navy); }
 .login__back { display: inline-block; margin-top: 18px; color: var(--muted); font-size: .9rem; }
 
 .adm-bar { background: var(--white); border-bottom: 1px solid var(--line); }

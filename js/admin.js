@@ -61,40 +61,36 @@ async function uploadImage(file) {
 }
 
 /* ---------- Connexion ---------- */
-// Lien privé (admin.html#cle=...) : connexion directe, sans identifiant
+// Accès uniquement par le lien privé (admin.html#cle=...), sans mot de passe.
+// La clé du lien est toujours prioritaire sur une ancienne session.
+function message(texte, erreur = false) {
+  const m = $("#login-error");
+  m.textContent = texte;
+  m.classList.toggle("is-info", !erreur);
+  m.hidden = false;
+}
+
 async function connexionParLien() {
   const cle = new URLSearchParams(location.hash.slice(1)).get("cle");
-  if (!cle || token) return;
+  if (!cle) {
+    if (token) return start();
+    return message("Cet espace s'ouvre uniquement avec le lien privé transmis au bureau du club.", true);
+  }
+  message("Connexion en cours…");
   try {
     const { token: t } = await api("/api/lien", { cle });
     token = t;
     sessionStorage.setItem("rt-admin", t);
-  } catch (ex) {
-    const err = $("#login-error");
-    err.textContent = ex.message;
-    err.hidden = false;
-  }
-}
-
-$("#login-form").addEventListener("submit", async e => {
-  e.preventDefault();
-  const err = $("#login-error");
-  err.hidden = true;
-  const btn = $("button", e.target);
-  btn.disabled = true;
-  try {
-    const { token: t } = await api("/api/login", { user: e.target.user.value, password: e.target.password.value });
-    token = t;
-    sessionStorage.setItem("rt-admin", t);
-    e.target.reset();
+    $("#login-error").hidden = true;
     await start();
   } catch (ex) {
-    err.textContent = ex.message;
-    err.hidden = false;
-  } finally {
-    btn.disabled = false;
+    token = "";
+    sessionStorage.removeItem("rt-admin");
+    message(ex.message, true);
   }
-});
+}
+// lien collé alors que la page était déjà ouverte : la page ne se recharge pas
+window.addEventListener("hashchange", connexionParLien);
 
 function logout() {
   token = "";
@@ -430,4 +426,4 @@ $("#maillot-save").addEventListener("click", async () => {
 });
 
 /* ---------- Démarrage ---------- */
-connexionParLien().then(() => { if (token) start(); });
+connexionParLien();
