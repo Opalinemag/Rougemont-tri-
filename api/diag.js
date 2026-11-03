@@ -9,5 +9,6 @@ export default function handler(req, res) {
     ancienneVariableAdminUser: !!process.env.ADMIN_USER,
     ancienneVariableAdminPassword: !!process.env.ADMIN_PASSWORD,
     environnement: process.env.VERCEL_ENV || "inconnu",
+    stockageRelie: !!(process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN),
   });
 }
