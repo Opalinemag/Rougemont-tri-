@@ -30,7 +30,7 @@ async function api(path, body) {
     body: body ? JSON.stringify(body) : undefined,
   });
   const json = await res.json().catch(() => ({}));
-  if (res.status === 401 && path !== "/api/login") { logout(); throw new Error(json.error || "Session expirée"); }
+  if (res.status === 401 && path !== "/api/login" && path !== "/api/lien") { logout(); throw new Error(json.error || "Session expirée"); }
   if (!res.ok) throw new Error(json.error || "Erreur " + res.status);
   return json;
 }
@@ -61,6 +61,21 @@ async function uploadImage(file) {
 }
 
 /* ---------- Connexion ---------- */
+// Lien privé (admin.html#cle=...) : connexion directe, sans identifiant
+async function connexionParLien() {
+  const cle = new URLSearchParams(location.hash.slice(1)).get("cle");
+  if (!cle || token) return;
+  try {
+    const { token: t } = await api("/api/lien", { cle });
+    token = t;
+    sessionStorage.setItem("rt-admin", t);
+  } catch (ex) {
+    const err = $("#login-error");
+    err.textContent = ex.message;
+    err.hidden = false;
+  }
+}
+
 $("#login-form").addEventListener("submit", async e => {
   e.preventDefault();
   const err = $("#login-error");
@@ -415,4 +430,4 @@ $("#maillot-save").addEventListener("click", async () => {
 });
 
 /* ---------- Démarrage ---------- */
-if (token) start();
+connexionParLien().then(() => { if (token) start(); });

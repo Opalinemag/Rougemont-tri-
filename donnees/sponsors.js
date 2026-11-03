@@ -2,33 +2,34 @@
    SPONSORS ET MAILLOT — contenu de départ
    Une fois le site en ligne, tout se gère dans l'espace administrateur
    (onglet Sponsors) : ajout des logos, présentations, liens.
-   Sponsors repris du projet de maillot. Sans logo, le nom s'affiche.
-   Logos : Wikimedia Commons / Wikipédia (marques déposées de leurs propriétaires) ;
-   SOCODIF : logo officiel (socodif-chimie-industrie.fr) ; SARL de la Forge
-   redessiné d'après le logo fourni.
+   Sponsors = ceux présents sur les tenues du club.
+   Logos : SOCODIF officiel (socodif-chimie-industrie.fr) ; SARL de la Forge
+   redessiné ; SOGEA, Assurances Abeilles et Cycle Franck Brun repris des
+   maquettes des tenues (à remplacer par les logos officiels si disponibles).
+   fondLogo : couleur de fond du cadre du logo (pour les logos blancs).
    ===================================================================== */
 const SPONSORS = [
-  { nom: "Mairie de Rougemont", activite: "Commune de Rougemont (Doubs)",
-    description: "La commune de Rougemont soutient le club et la pratique sportive des jeunes du village.",
-    logo: "images/sponsors/mairie-rougemont.svg", site: "" },
-  { nom: "Super U", activite: "Grande distribution",
-    description: "Enseigne de supermarchés de la Coopérative U, partenaire de la vie locale et des associations sportives.",
-    logo: "images/sponsors/super-u.svg", site: "https://www.magasins-u.com" },
-  { nom: "Lapierre", activite: "Fabricant de vélos",
-    description: "Marque française de vélos née à Dijon en 1946, référence du vélo de route, de triathlon et de VTT.",
-    logo: "images/sponsors/lapierre.svg", site: "https://www.lapierrebikes.com" },
-  { nom: "Ford", activite: "Automobile",
-    description: "Constructeur automobile américain fondé en 1903, partenaire du club.",
-    logo: "images/sponsors/ford.svg", site: "https://www.ford.fr" },
   { nom: "SOCODIF", activite: "Produits techniques pour professionnels",
     description: "Fabricant de produits techniques (détergents, lubrifiants, traitements, produits verts…) pour l'industrie, le bâtiment et les collectivités.",
     logo: "images/sponsors/socodif.svg", site: "https://www.socodif-chimie-industrie.fr" },
+  { nom: "SOGEA", activite: "Travaux publics",
+    description: "Partenaire du club, présent sur les tenues officielles.",
+    logo: "images/sponsors/sogea.png", fondLogo: "#16246a", site: "" },
+  { nom: "Assurances Abeilles", activite: "Assurances",
+    description: "Partenaire du club, présent sur les tenues officielles.",
+    logo: "images/sponsors/assurances-abeilles.png", fondLogo: "#16246a", site: "" },
   { nom: "SARL de la Forge", activite: "Terrassement et travaux publics",
     description: "Entreprise de terrassement et de travaux publics, partenaire du club.",
     logo: "images/sponsors/sarl-de-la-forge.svg", site: "" },
+  { nom: "Cycle Franck Brun", activite: "Cycles",
+    description: "Partenaire du club, présent sur les tenues officielles.",
+    logo: "images/sponsors/cycle-franck-brun.png", fondLogo: "#16246a", site: "" },
+  { nom: "Mairie de Rougemont", activite: "Partenaire institutionnel",
+    description: "La commune de Rougemont soutient le club en mettant à disposition ses installations pour les entraînements.",
+    logo: "images/sponsors/mairie-rougemont.svg", site: "" },
 ];
 
 const MAILLOT = {
-  image: "images/maillot.jpg",
-  texte: "La tenue du club : trifonction et tee-shirt aux couleurs de Rougemont, avec les logos de nos partenaires.",
+  image: "images/tenues/tenues-garcon-fille.webp",
+  texte: "Les tenues officielles du club, en version garçon (bleu et rouge) et fille (bleu et rose) : maillot et trifonction sans manches, aux couleurs de Rougemont et de nos partenaires.",
 };

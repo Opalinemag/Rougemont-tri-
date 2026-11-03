@@ -484,3 +484,18 @@ a.topbar__item:hover { color: var(--white); }
 .legal__list strong { color: var(--navy); }
 .legal__list span { color: var(--muted); word-break: break-word; }
 @media (max-width: 640px) { .legal { grid-template-columns: 1fr; } .legal__list li { grid-template-columns: 1fr; gap: 0; } }
+.marquee__item img.logo-fond { padding: 6px 10px; border-radius: 6px; }
+
+/* Tenues : choix garçon / fille et planches */
+.variantes { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.variante { border: 2px solid var(--navy); background: var(--white); color: var(--navy); font-family: var(--head); font-weight: 700; text-transform: uppercase; font-size: 1rem; padding: 6px 14px; border-radius: var(--radius); cursor: pointer; }
+.variante.is-active { background: var(--navy); color: var(--white); }
+.variante[data-variante="fille"].is-active { background: #e0358f; border-color: #e0358f; }
+.variante[data-variante="fille"] { border-color: #e0358f; color: #c2186e; }
+.tenues { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 8px; }
+.tenue a { display: block; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; cursor: zoom-in; }
+.tenue img { width: 100%; aspect-ratio: 3 / 2; object-fit: contain; transition: transform .3s; }
+.tenue a:hover img { transform: scale(1.03); }
+.tenue figcaption { margin-top: 6px; color: var(--muted); font-size: .92rem; text-align: center; }
+@media (max-width: 640px) { .tenues { grid-template-columns: 1fr; } }
+.footer__slogan { font-family: var(--head); font-style: italic; font-weight: 700; font-size: 1.15rem; color: var(--yellow); margin-top: 8px; }

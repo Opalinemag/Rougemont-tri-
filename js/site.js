@@ -70,6 +70,7 @@ function renderLayout() {
       <div>
         <img src="images/logo.svg" alt="Rougemont Triathlon" class="footer__logo">
         <p>Le sport ensemble, l'aventure en équipe ! Duathlon, course à pied, vélo et Bike &amp; Run, avec une place privilégiée pour les jeunes.</p>
+        <p class="footer__slogan">Ensemble, faisons grandir les champions de demain !</p>
         <p class="footer__fftri">Club affilié à la Fédération Française de Triathlon (FFTRI)${CLUB.affiliationFFTRI ? " – N°" + esc(CLUB.affiliationFFTRI) : ""}</p>
       </div>
       <div>
@@ -92,10 +93,6 @@ function renderLayout() {
     <div class="container footer__bottom">
       <span>© ${new Date().getFullYear()} ${esc(CLUB.nom)}${CLUB.forme ? " · " + esc(CLUB.forme) : ""}${CLUB.rna ? " · RNA " + esc(CLUB.rna) : ""}${CLUB.siret ? " · SIRET " + esc(CLUB.siret) : ""}</span>
       ${CLUB.credit ? `<span>${esc(CLUB.credit)}</span>` : ""}
-      <a href="admin.html" class="admin-btn" rel="nofollow">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zm-7-2a2 2 0 1 1 4 0v2h-4V7zm3 9.7V18h-2v-1.3a1.5 1.5 0 1 1 2 0z"/></svg>
-        Connexion administrateur
-      </a>
     </div>`;
 
   const burger = $(".burger"), nav = $(".nav");
@@ -292,6 +289,13 @@ function renderPhotos() {
 }
 
 /* ---------- Sponsors ---------- */
+// Planches des tenues (garçon et fille) affichées sous la trifonction 3D
+const TENUES = [
+  { src: "images/tenues/tenues-garcon-fille.webp", titre: "Maillots et trifonctions, garçon et fille" },
+  { src: "images/tenues/maillot-garcon.webp", titre: "Maillot garçon : face, dos et côtés" },
+  { src: "images/tenues/maillot-fille.webp", titre: "Maillot fille : face, dos et côtés" },
+  { src: "images/tenues/trifonctions.webp", titre: "Trifonctions sans manches, garçon et fille" },
+];
 function renderSponsors() {
   const sponsors = (DATA.sponsors || []).filter(s => s && (s.nom || s.logo));
 
@@ -299,7 +303,7 @@ function renderSponsors() {
   const band = $("[data-sponsor-band]");
   if (band) {
     const items = sponsors.length
-      ? sponsors.map(s => `<a href="partenaires.html" class="marquee__item" title="${esc(s.nom)}">${s.logo ? `<img src="${esc(s.logo)}" alt="${esc(s.nom)}">` : `<span>${esc(s.nom)}</span>`}</a>`)
+      ? sponsors.map(s => `<a href="partenaires.html" class="marquee__item" title="${esc(s.nom)}">${s.logo ? `<img src="${esc(s.logo)}" alt="${esc(s.nom)}"${s.fondLogo ? ` class="logo-fond" style="background:${esc(s.fondLogo)}"` : ""}>` : `<span>${esc(s.nom)}</span>`}</a>`)
       : [`<span class="marquee__item"><img src="images/logo.png" alt="Rougemont Triathlon"></span>`];
     // on répète les logos pour remplir la largeur, puis on double pour une boucle sans coupure
     let row = [];
@@ -312,7 +316,7 @@ function renderSponsors() {
   if (list) {
     list.innerHTML = sponsors.map(s => `
       <article class="sponsor-card">
-        <div class="sponsor-card__logo">${s.logo ? `<img src="${esc(s.logo)}" alt="${esc(s.nom)}" loading="lazy">` : `<span>${esc(s.nom)}</span>`}</div>
+        <div class="sponsor-card__logo"${s.fondLogo ? ` style="background:${esc(s.fondLogo)};border-color:${esc(s.fondLogo)}"` : ""}>${s.logo ? `<img src="${esc(s.logo)}" alt="${esc(s.nom)}" loading="lazy">` : `<span>${esc(s.nom)}</span>`}</div>
         <div class="sponsor-card__body">
           <h3>${esc(s.nom)}</h3>
           ${s.activite ? `<p class="cat">${esc(s.activite)}</p>` : ""}
@@ -340,16 +344,26 @@ function renderSponsors() {
       </div>
       <figure class="maillot">
         ${typeof THREE !== "undefined" ? `
+          <div class="variantes" role="group" aria-label="Choisir la trifonction">
+            <button type="button" class="variante is-active" data-variante="garcon">Trifonction garçon</button>
+            <button type="button" class="variante" data-variante="fille">Trifonction fille</button>
+          </div>
           <div class="trifonction-3d" data-trifonction-3d aria-label="Trifonction du club en 3D"></div>
-          <figcaption>La trifonction officielle du club.</figcaption>`
-        : m.image ? `<img src="${esc(m.image)}" alt="Le maillot du Rougemont Triathlon">`
+          <figcaption>La trifonction officielle du club, en 3D.</figcaption>`
+        : m.image ? `<img src="${esc(m.image)}" alt="Les tenues du Rougemont Triathlon">`
         : `<div class="maillot__empty"><img src="images/logo.png" alt=""><span>Maillot bientôt dévoilé</span></div>`}
       </figure>
-      ${typeof THREE !== "undefined" && m.image ? `
-      <figure class="maquettes">
-        <a href="${esc(m.image)}" data-zoom="Maquettes de la tenue du club"><img src="${esc(m.image)}" alt="Maquettes à plat de la tenue : trifonction de face et de dos, et tee-shirt" loading="lazy"></a>
-        <figcaption>Les maquettes à plat : trifonction (face et dos) et tee-shirt du club.</figcaption>
-      </figure>` : ""}`;
+      <div class="tenues">
+        ${TENUES.map(t => `
+          <figure class="tenue">
+            <a href="${t.src}" data-zoom="${esc(t.titre)}"><img src="${t.src}" alt="${esc(t.titre)}" loading="lazy"></a>
+            <figcaption>${esc(t.titre)}</figcaption>
+          </figure>`).join("")}
+      </div>`;
+    maillot.querySelectorAll("[data-variante]").forEach(btn => btn.addEventListener("click", () => {
+      maillot.querySelectorAll("[data-variante]").forEach(b => b.classList.toggle("is-active", b === btn));
+      if (window.initTrifonction3D) window.initTrifonction3D(btn.dataset.variante);
+    }));
     if (window.initTrifonction3D) window.initTrifonction3D();
   }
 }

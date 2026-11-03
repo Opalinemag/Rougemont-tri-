@@ -30,7 +30,7 @@ const ACTUALITES = [
     resume: "Le 19 octobre 2026, l'association Rougemont Triathlon a vu le jour. Premières séances en novembre, cap sur 2027 !",
     texte: [
       "C'est officiel : le club Rougemont Triathlon a été créé le 19 octobre 2026 à Rougemont (25680). Il est affilié à la Fédération Française de Triathlon (FFTRI) sous le n°2356.",
-      "Le bureau de l'association est composé d'Arnaud Crozat (président, titulaire du BF2 FFTri, initiateur-éducateur triathlon), de Mélanie Gervais (trésorière) et de Marie-Christine Crozat (secrétaire).",
+      "Le bureau de l'association est composé d'Arnaud Crozat (président, titulaire du BF2 FFTri, initiateur-éducateur triathlon), de Mélanie Gervais (trésorière) et de Marie-Christine Crozat Hazard (secrétaire).",
       "Notre ambition : proposer un triathlon accessible à tous, enfants comme adultes, dans un esprit de convivialité et de partage. Les premières séances démarrent en novembre 2026, et nous avons de beaux projets pour la saison 2027.",
       "Pour toute question ou inscription, contactez-nous par téléphone ou par e-mail.",
     ],
