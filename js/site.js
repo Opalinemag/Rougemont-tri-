@@ -422,10 +422,16 @@ function contactForm() {
     };
     if (f.email.value) data._replyto = f.email.value;
     try {
-      const res = await fetch("https://formsubmit.co/ajax/" + CLUB.email.trim(), {
+      // Web3Forms si le club a renseigné sa clé (site pilote, onglet Club), sinon FormSubmit
+      const web3 = !!(CLUB.cleFormulaire || "").trim();
+      const corps = web3
+        ? { ...data, access_key: CLUB.cleFormulaire.trim(), subject: data._subject, from_name: "Site Rougemont Triathlon", ...(f.email.value ? { replyto: f.email.value } : {}) }
+        : data;
+      if (web3) for (const k of ["_subject", "_template", "_captcha", "_replyto"]) delete corps[k];
+      const res = await fetch(web3 ? "https://api.web3forms.com/submit" : "https://formsubmit.co/ajax/" + CLUB.email.trim(), {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(corps),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || String(json.success) !== "true") throw new Error(json.message || res.status);
