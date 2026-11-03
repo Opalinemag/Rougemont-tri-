@@ -433,7 +433,11 @@ function contactForm() {
       show(`Merci ! Votre demande a bien été envoyée. Le club vous recontactera ${rappel.toLowerCase()} très rapidement.`, true);
     } catch (err) {
       console.warn("Envoi du formulaire impossible", err);
-      show(`L'envoi n'a pas fonctionné. Vous pouvez joindre le club directement au ${CLUB.telephone} ou à ${CLUB.email}.`, false);
+      // Tant que le club n'a pas activé le formulaire, le service d'envoi refuse les demandes
+      const aActiver = /activ/i.test(String(err && err.message));
+      show(aActiver
+        ? `Le formulaire n'est pas encore activé : le club vient de recevoir un mail d'activation sur ${CLUB.email}. En attendant, vous pouvez joindre le club au ${CLUB.telephone}.`
+        : `L'envoi n'a pas fonctionné. Vous pouvez joindre le club directement au ${CLUB.telephone} ou à ${CLUB.email}.`, false);
     } finally {
       btn.disabled = false;
       btn.textContent = "Envoyer la demande";
