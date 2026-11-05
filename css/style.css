@@ -328,7 +328,7 @@ a.topbar__item:hover { color: var(--white); }
 .footer__bottom { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,.12); padding: 18px 0 26px; font-size: .85rem; align-items: center; }
 
 /* ---------- Tablette ---------- */
-@media (max-width: 1340px) {
+@media (max-width: 1100px) {
   .burger { display: block; }
   .nav { position: absolute; left: 0; right: 0; top: 100%; background: var(--white); flex-direction: column; align-items: stretch; gap: 0; border-bottom: 1px solid var(--line); display: none; padding: 6px 16px 16px; }
   .nav.open { display: flex; }
@@ -532,3 +532,42 @@ a[href^="mailto:"] { overflow-wrap: anywhere; }
 .pass-club__actions { display: flex; flex-direction: column; gap: 12px; align-items: stretch; text-align: center; }
 .pass-club__actions .btn { justify-content: center; }
 @media (max-width: 820px) { .pass-club { grid-template-columns: 1fr; padding: 22px 18px; } }
+
+/* Menus déroulants du haut */
+.nav__groupe { position: relative; }
+.nav__titre { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; border-bottom: 3px solid transparent; cursor: pointer;
+  font-family: var(--head); font-size: 1.04rem; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: var(--ink); padding: 8px 9px; white-space: nowrap; }
+.nav__titre svg { width: 10px; height: 8px; transition: transform .2s; }
+.nav__titre:hover, .nav__groupe.open .nav__titre { color: var(--red); }
+.nav__groupe.active .nav__titre { color: var(--navy); border-bottom-color: var(--red); }
+.nav__sous { position: absolute; top: 100%; left: 0; min-width: 230px; background: var(--white); border: 1px solid var(--line); border-top: 3px solid var(--red);
+  border-radius: 0 0 6px 6px; box-shadow: 0 12px 30px rgba(15,33,80,.14); padding: 6px 0; display: none; z-index: 60; }
+.nav__sous a { display: block; padding: 10px 16px; color: var(--ink); text-decoration: none; font-weight: 600; white-space: nowrap; }
+.nav__sous a:hover { background: #f4f6fa; color: var(--red); }
+.nav__groupe.open .nav__sous { display: block; }
+.nav__groupe.open .nav__titre svg { transform: rotate(180deg); }
+@media (hover: hover) and (min-width: 1101px) {
+  .nav__groupe:hover .nav__sous { display: block; }
+  .nav__groupe:hover .nav__titre svg { transform: rotate(180deg); }
+}
+/* Menu sur mobile et tablette : les sous-menus s'affichent en liste sous leur titre */
+@media (max-width: 1100px) {
+  .nav__groupe { border-bottom: 1px solid var(--line); }
+  .nav__titre { width: 100%; justify-content: space-between; padding: 12px 4px; border-bottom: 0; }
+  .nav__groupe.active .nav__titre { border-bottom: 0; color: var(--red); }
+  .nav__sous { position: static; box-shadow: none; border: 0; border-left: 3px solid var(--red); border-radius: 0; margin: 0 0 10px 4px; padding: 0; min-width: 0; }
+  .nav__sous a { padding: 9px 12px; font-weight: 400; }
+}
+
+/* Pass'Sport */
+.pass-sport { margin-top: 24px; border-color: var(--navy); }
+.pass-sport__devise { font-family: var(--head); font-style: italic; font-weight: 700; font-size: 1.15rem; color: var(--red); }
+/* Les dirigeants, avec photo */
+.dirigeants { margin-top: 22px; display: grid; gap: 14px; }
+.dirigeant { display: flex; align-items: center; gap: 16px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+.dirigeant__photo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: none; border: 3px solid var(--white); box-shadow: 0 0 0 2px var(--red); }
+.dirigeant__photo--vide { display: grid; place-items: center; background: var(--navy); color: var(--white); font-family: var(--head); font-size: 1.5rem; font-weight: 700; }
+.dirigeant__texte { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.dirigeant__texte strong { color: var(--navy); font-size: 1.08rem; }
+.dirigeant__texte span { color: var(--muted); }
+.dirigeant__texte a { font-weight: 700; color: var(--red); text-decoration: none; }

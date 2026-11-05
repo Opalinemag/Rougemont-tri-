@@ -26,7 +26,7 @@ export default async function handler(req, res) {
         maillot: { image: String(b.maillot?.image || ""), texte: String(b.maillot?.texte || "") },
         club: Object.fromEntries(CHAMPS_CLUB.map(k => [k, texte(b.club?.[k])])),
         notes: { meteo: texte(b.notes?.meteo), adultes: texte(b.notes?.adultes) },
-        bureau: asArray(b.bureau).map(p => ({ nom: texte(p?.nom), role: texte(p?.role), telephone: texte(p?.telephone) })).filter(p => p.nom),
+        bureau: asArray(b.bureau).map(p => ({ nom: texte(p?.nom), role: texte(p?.role), telephone: texte(p?.telephone), photo: texte(p?.photo) })).filter(p => p.nom),
         modifie: new Date().toISOString(),
       };
       await writeContent(content);

@@ -25,17 +25,32 @@ const reseaux = () => [
 ];
 
 /* ---------- En-tête et pied de page (identiques sur toutes les pages) ---------- */
-const PAGES = [
+// Menu du haut : un lien simple, ou un menu déroulant [titre, [[lien, libellé], …]]
+const MENU = [
   ["index.html", "Accueil"],
-  ["le-club.html", "Le club"],
-  ["disciplines.html", "Nos disciplines"],
-  ["entrainements.html", "Entraînements"],
+  ["Le club", [
+    ["le-club.html", "Présentation"],
+    ["le-club.html#dirigeants", "Les dirigeants"],
+    ["tenues.html", "Nos tenues"],
+    ["partenaires.html", "Partenaires"],
+  ]],
+  ["Pratiquer", [
+    ["disciplines.html", "Nos disciplines"],
+    ["entrainements.html", "Entraînements"],
+    ["rejoindre.html#pass-club", "Essai gratuit 1 mois"],
+    ["rejoindre.html#pass-sport", "Pass'Sport"],
+  ]],
   ["actualites.html", "Actualités"],
-  ["partenaires.html", "Partenaires"],
-  ["tenues.html", "Nos tenues"],
+  ["photos.html", "Photos"],
   ["contact.html", "Contact"],
 ];
-const PAGES_PIED = [...PAGES.slice(0, 5), ["rejoindre.html", "Rejoindre le club"], ["photos.html", "Photos"], ...PAGES.slice(5)];
+const PAGES_PIED = [
+  ["index.html", "Accueil"], ["le-club.html", "Le club"], ["disciplines.html", "Nos disciplines"],
+  ["entrainements.html", "Entraînements"], ["actualites.html", "Actualités"], ["photos.html", "Photos"],
+  ["rejoindre.html", "Rejoindre le club"], ["tenues.html", "Nos tenues"], ["partenaires.html", "Partenaires"],
+  ["contact.html", "Contact"],
+];
+const pageDe = href => href.split("#")[0].replace(".html", "");
 
 function renderLayout() {
   const page = document.body.dataset.page;
@@ -60,7 +75,12 @@ function renderLayout() {
         </a>
         <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
         <nav class="nav">
-          ${PAGES.map(([href, label]) => `<a href="${href}"${href.startsWith(page) ? ' class="active" aria-current="page"' : ""}>${label}</a>`).join("")}
+          ${MENU.map(([a, b]) => Array.isArray(b)
+            ? `<div class="nav__groupe${b.some(([h]) => pageDe(h) === page) ? " active" : ""}">
+                <button type="button" class="nav__titre" aria-expanded="false">${a}<svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+                <div class="nav__sous">${b.map(([h, l]) => `<a href="${h}">${l}</a>`).join("")}</div>
+              </div>`
+            : `<a href="${a}"${pageDe(a) === page ? ' class="active" aria-current="page"' : ""}>${b}</a>`).join("")}
           <a href="rejoindre.html" class="btn btn--red btn--sm${page === "rejoindre" ? " is-active" : ""}">Rejoindre le club</a>
         </nav>
       </div>
@@ -101,6 +121,20 @@ function renderLayout() {
 
   const burger = $(".burger"), nav = $(".nav");
   burger.addEventListener("click", () => burger.setAttribute("aria-expanded", nav.classList.toggle("open")));
+  // Menus déroulants : ouverture au clic (et au survol sur ordinateur, voir CSS)
+  const groupes = [...document.querySelectorAll(".nav__groupe")];
+  groupes.forEach(g => $(".nav__titre", g).addEventListener("click", e => {
+    e.stopPropagation();
+    const ouvert = !g.classList.contains("open");
+    groupes.forEach(x => { x.classList.remove("open"); $(".nav__titre", x).setAttribute("aria-expanded", "false"); });
+    g.classList.toggle("open", ouvert);
+    $(".nav__titre", g).setAttribute("aria-expanded", String(ouvert));
+  }));
+  if (!renderLayout.fermeture) {
+    renderLayout.fermeture = true;
+    document.addEventListener("click", () => document.querySelectorAll(".nav__groupe.open").forEach(g => g.classList.remove("open")));
+    document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".nav__groupe.open").forEach(g => g.classList.remove("open")); });
+  }
 
   // Blocs « réseaux sociaux » et coordonnées présents dans les pages
   document.querySelectorAll("[data-socials]").forEach(el => {
@@ -438,8 +472,12 @@ contactForm();
 function renderBureau() {
   if (!DATA.bureau) return;
   document.querySelectorAll("[data-bureau]").forEach(el => {
+    const initiales = nom => nom.split(/[\s-]+/).filter(Boolean).slice(0, 2).map(m => m[0].toUpperCase()).join("");
     el.innerHTML = DATA.bureau.map(p => `
-      <li><strong>${esc(p.nom)}</strong><span>${esc(p.role)}${p.telephone ? `${p.role ? " · " : ""}<a href="${telHref(p.telephone)}">${esc(p.telephone)}</a>` : ""}</span></li>`).join("");
+      <li class="dirigeant">
+        ${p.photo ? `<img src="${esc(p.photo)}" alt="${esc(p.nom)}" class="dirigeant__photo" loading="lazy">` : `<span class="dirigeant__photo dirigeant__photo--vide" aria-hidden="true">${esc(initiales(p.nom))}</span>`}
+        <span class="dirigeant__texte"><strong>${esc(p.nom)}</strong><span>${esc(p.role)}</span>${p.telephone ? `<a href="${telHref(p.telephone)}">${esc(p.telephone)}</a>` : ""}</span>
+      </li>`).join("");
   });
 }
 

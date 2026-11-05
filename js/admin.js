@@ -439,6 +439,11 @@ $("#maillot-save").addEventListener("click", async () => {
 /* ---------- Club : coordonnées, liens, bureau ---------- */
 const membreHtml = (p = {}) => `
   <tr>
+    <td class="membre-photo">
+      <input type="hidden" data-b="photo" value="${esc(p.photo)}">
+      <img src="${esc(p.photo)}" alt=""${p.photo ? "" : " hidden"}>
+      <label class="btn btn--outline btn--xs file-btn">${p.photo ? "Changer" : "Ajouter"}<input type="file" accept="image/*" data-photo-membre></label>
+    </td>
     <td><input data-b="nom" value="${esc(p.nom)}" placeholder="Prénom Nom"></td>
     <td><input data-b="role" value="${esc(p.role)}" placeholder="Ex : Trésorière"></td>
     <td><input data-b="telephone" value="${esc(p.telephone)}" placeholder="06 00 00 00 00"></td>
@@ -450,6 +455,22 @@ function renderClub() {
 }
 $("#bureau-add").addEventListener("click", () => $("#bureau-rows").insertAdjacentHTML("beforeend", membreHtml()));
 $("#bureau-rows").addEventListener("click", e => { if (e.target.closest("[data-row-del]")) e.target.closest("tr").remove(); });
+// Photo d'un dirigeant : envoyée tout de suite, enregistrée avec « Enregistrer »
+$("#bureau-rows").addEventListener("change", async e => {
+  const input = e.target.closest("[data-photo-membre]");
+  if (!input || !input.files[0]) return;
+  const td = input.closest("td");
+  toast("Envoi de la photo…");
+  try {
+    const url = await uploadImage(input.files[0]);
+    $("[data-b=photo]", td).value = url;
+    const img = $("img", td);
+    img.src = url;
+    img.hidden = false;
+    toast("Photo prête, cliquez sur « Enregistrer »");
+  } catch (ex) { toast("Échec de l'envoi : " + ex.message, true); }
+  input.value = "";
+});
 $("#club-save").addEventListener("click", async () => {
   document.querySelectorAll("[data-club-f]").forEach(el => (content.club[el.dataset.clubF] = el.value.trim()));
   content.bureau = [...document.querySelectorAll("#bureau-rows tr")].map(tr => {
