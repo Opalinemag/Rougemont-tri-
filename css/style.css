@@ -571,3 +571,7 @@ a[href^="mailto:"] { overflow-wrap: anywhere; }
 .dirigeant__texte strong { color: var(--navy); font-size: 1.08rem; }
 .dirigeant__texte span { color: var(--muted); }
 .dirigeant__texte a { font-weight: 700; color: var(--red); text-decoration: none; }
+.pass-sport__montant { font-size: 1.15rem; }
+.pass-sport__montant strong { font-family: var(--head); font-size: 2rem; color: var(--red); vertical-align: -3px; margin-right: 4px; }
+.pass-sport__etapes { margin: 8px 0 0; padding-left: 22px; }
+.pass-sport__etapes li { margin-bottom: 4px; }
