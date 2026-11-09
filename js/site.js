@@ -323,8 +323,20 @@ function renderNews() {
 }
 
 /* ---------- Photos ---------- */
+// Album automatique : les photos ajoutées aux actualités depuis le site pilote,
+// de la plus récente à la plus ancienne, si elles ne sont pas déjà dans un album
+function albumVieDuClub() {
+  const dejaLa = new Set(DATA.albums.flatMap(al => al.photos.map(p => p.src)));
+  const sansEmoji = t => String(t).replace(/[\p{Extended_Pictographic}‍️]/gu, "").replace(/\s+/g, " ").trim();
+  const photos = (DATA.actualites ? actusTriees() : [])
+    .filter(a => String(a.image || "").startsWith("/api/media") && !dejaLa.has(a.image))
+    .map(a => ({ src: a.image, legende: sansEmoji(a.titre) }));
+  return photos.length ? [{ titre: "Vie du club", date: "Dernières photos", photos }] : [];
+}
+
 function renderPhotos() {
   if (!DATA.albums) return;
+  DATA.albums = [...albumVieDuClub(), ...DATA.albums];
   const strip = $("#photo-strip");
   if (strip) {
     const all = DATA.albums.flatMap(al => al.photos).slice(0, 5);
