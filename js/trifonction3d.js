@@ -1,10 +1,11 @@
-/* Trifonction du club portée par un buste de mannequin en 3D.
+/* Trifonction du club en 3D, présentée en « mannequin invisible » : seule la tenue
+   est visible, avec le volume d'un corps.
    - Les vues de face et de dos sont découpées dans images/tenues/trifonctions.webp
      (version garçon ou fille) et détourées (fond blanc retiré).
-   - La forme du corps est calculée à partir du contour de la trifonction :
-     à chaque hauteur, une section elliptique (torse) ou deux (jambes).
-   - Le motif est projeté de face sur l'avant et de dos sur l'arrière,
-     puis éclairé comme un vrai objet. */
+   - La forme est calculée à partir du contour de la trifonction : à chaque hauteur,
+     une section arrondie (torse) ou deux (jambes).
+   - Le motif est projeté de face sur l'avant et de dos sur l'arrière ; les flancs
+     sont raccordés avec la couleur commune aux deux vues, pour ne voir aucune couture. */
 window.initTrifonction3D = function (variante = "garcon") {
   const host = document.querySelector("[data-trifonction-3d]");
   if (!host || typeof THREE === "undefined") return;
@@ -86,7 +87,14 @@ window.initTrifonction3D = function (variante = "garcon") {
     // emmanchures, on recolle chaque ligne en un torse, ou en deux jambes de part et
     // d'autre de l'entrejambe (le vide qui passe par le milieu), et on rebouche les trous.
     const opaque = (y, x) => op[(y * W + x) * 4 + 3] > 128;
-    const remplir = (y, a, b) => { for (let x = a; x <= b; x++) op[(y * W + x) * 4 + 3] = 255; };
+    // les pixels rebouchés sont les rayures blanches du motif, retirées par le détourage
+    const remplir = (y, a, b) => {
+      for (let x = a; x <= b; x++) {
+        const i = (y * W + x) * 4;
+        if (op[i + 3] < 200) op[i] = op[i + 1] = op[i + 2] = 245;
+        op[i + 3] = 255;
+      }
+    };
     // Les rayures blanches du bord sont aussi retirées par le détourage : le contour
     // extérieur ne peut pas rentrer d'un coup, on garde le plus large sur ±12 lignes.
     const y30 = Math.round(H * 0.3), Lb = [], Rb = [];
@@ -121,7 +129,84 @@ window.initTrifonction3D = function (variante = "garcon") {
   }
 
   const img = new Image();
-  img.onload = () => build(decoupe(img, ZONES.face), decoupe(img, ZONES.dos));
+  img.onload = () => {
+    const face = decoupe(img, ZONES.face), dos = decoupe(img, ZONES.dos);
+    raccorder(face, dos);
+    build(face, dos);
+  };
+
+  // Bas de l'emmanchure : première ligne où le torse atteint presque sa largeur maximale
+  function ligneAisselle(rows) {
+    const largeur = y => (rows[y].length ? rows[y][rows[y].length - 1][1] - rows[y][0][0] : 0);
+    let max = 0;
+    for (let y = 0; y < H * 0.45; y++) max = Math.max(max, largeur(y));
+    for (let y = 0; y < H * 0.45; y++) if (largeur(y) >= max * 0.97) return y;
+    return Math.round(H * 0.25);
+  }
+
+  /* ---------- Raccord des flancs entre la vue de face et la vue de dos ----------
+     Le long de chaque bord, on prend la couleur moyenne des deux vues, lissée sur la
+     hauteur, et on y fond le motif : même couleur des deux côtés, donc pas de couture. */
+  function raccorder(face, dos) {
+    const fx = face.canvas.getContext("2d"), dx = dos.canvas.getContext("2d");
+    const fd = fx.getImageData(0, 0, W, H), dd = dx.getImageData(0, 0, W, H);
+    const FONDU = 30, BANDE = [5, 20], LISSAGE = 10;
+    const moyenne = (px, y, bord, sens) => {
+      const c = [0, 0, 0];
+      let n = 0;
+      for (let t = BANDE[0]; t < BANDE[1]; t++) {
+        const x = bord + sens * t;
+        if (x < 0 || x >= W) continue;
+        const i = (y * W + x) * 4;
+        if (px[i + 3] < 128) continue;
+        c[0] += px[i]; c[1] += px[i + 1]; c[2] += px[i + 2]; n++;
+      }
+      return n ? c.map(v => v / n) : null;
+    };
+    // Bords qui se correspondent : le côté gauche de la face est le côté droit de la photo de dos
+    const bords = y => {
+      const f = face.rows[y], d = dos.rows[y];
+      if (!f.length || !d.length) return [];
+      const fL = f[f.length - 1], dL = d[d.length - 1];
+      const liste = [[f[0][0], 1, dL[1], -1], [fL[1], -1, d[0][0], 1]];
+      if (f.length >= 2 && d.length >= 2) liste.push([f[0][1], -1, dL[0], 1], [fL[0], 1, d[0][1], -1]);
+      return liste;
+    };
+    const debut = Math.max(ligneAisselle(face.rows), ligneAisselle(dos.rows)); // au-dessus : emmanchures ouvertes
+    for (let k = 0; k < 4; k++) {
+      const couleurs = [];
+      for (let y = 0; y < H; y++) {
+        const b = y >= debut ? bords(y)[k] : null;
+        if (!b) { couleurs.push(null); continue; }
+        const a = moyenne(fd.data, y, b[0], b[1]), c = moyenne(dd.data, y, b[2], b[3]);
+        couleurs.push(a && c ? a.map((v, i) => (v + c[i]) / 2) : a || c);
+      }
+      for (let y = 0; y < H; y++) {
+        const b = y >= debut ? bords(y)[k] : null;
+        if (!b || !couleurs[y]) continue;
+        const col = [0, 0, 0];
+        let n = 0;
+        for (let q = -LISSAGE; q <= LISSAGE; q++) {
+          const v = couleurs[y + q];
+          if (v) { col[0] += v[0]; col[1] += v[1]; col[2] += v[2]; n++; }
+        }
+        const peint = (px, bord, sens) => {
+          for (let t = -6; t < FONDU; t++) {
+            const x = bord + sens * t;
+            if (x < 0 || x >= W) continue;
+            const i = (y * W + x) * 4;
+            if (px[i + 3] === 0) continue;
+            const u = Math.max(0, t) / FONDU, m = 1 - u * u * (3 - 2 * u);
+            for (let c = 0; c < 3; c++) px[i + c] += (col[c] / n - px[i + c]) * m;
+          }
+        };
+        peint(fd.data, b[0], b[1]);
+        peint(dd.data, b[2], b[3]);
+      }
+    }
+    fx.putImageData(fd, 0, 0);
+    dx.putImageData(dd, 0, 0);
+  }
   img.src = SRC;
 
   function build(face, dos) {
@@ -134,22 +219,22 @@ window.initTrifonction3D = function (variante = "garcon") {
     host._detruire = () => { actif = false; renderer.dispose(); renderer.domElement.remove(); host._detruire = null; };
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
-    camera.position.set(0, 0.1, 7.3);
-    camera.lookAt(0, 0.02, 0);
 
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x8a96b0, 0.8));
-    const key = new THREE.DirectionalLight(0xffffff, 0.7);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0xaab4cc, 1.0));
+    const key = new THREE.DirectionalLight(0xffffff, 0.45);
     key.position.set(2.5, 3, 4);
     scene.add(key);
-    const rim = new THREE.DirectionalLight(0xdbe6ff, 0.45);
+    const rim = new THREE.DirectionalLight(0xdbe6ff, 0.3);
     rim.position.set(-3, 1.5, -3);
     scene.add(rim);
 
     const tex = cv => { const t = new THREE.CanvasTexture(cv); t.encoding = THREE.sRGBEncoding; t.anisotropy = renderer.capabilities.getMaxAnisotropy(); return t; };
     // alphaToCoverage + antialias : bords des emmanchures, de l'encolure et des cuisses lissés
-    const tissu = cv => new THREE.MeshStandardMaterial({ map: tex(cv), alphaTest: 0.35, alphaToCoverage: true, side: THREE.DoubleSide, roughness: 0.55, metalness: 0.05 });
+    const tissu = cv => new THREE.MeshStandardMaterial({ map: tex(cv), alphaTest: 0.35, alphaToCoverage: true, side: THREE.FrontSide, roughness: 0.78, metalness: 0 });
+    // Intérieur du vêtement, visible à l'encolure, aux emmanchures et aux cuisses
+    const doublure = mat => new THREE.MeshBasicMaterial({ map: mat.map, color: 0x0c1019, alphaTest: 0.35, side: THREE.BackSide });
     const matFace = tissu(face.canvas), matDos = tissu(dos.canvas);
-    const matPeau = new THREE.MeshStandardMaterial({ color: 0xe4e7ec, roughness: 0.7, metalness: 0 }); // mannequin
+    const inFace = doublure(matFace), inDos = doublure(matDos);
 
     /* ---------- Conversion pixels -> monde ---------- */
     const HAUT = 2.7, K = HAUT / H;
@@ -200,7 +285,9 @@ window.initTrifonction3D = function (variante = "garcon") {
             const a = (avant ? -Math.PI / 2 : Math.PI / 2) + (j / SEG) * Math.PI;
             const sx = puis(Math.sin(a)), cz = puis(Math.cos(a));
             const x = p.c + sx * p.hw;
-            const z = cz * (cz >= 0 ? p3.av : p3.ar) + p3.dz;
+            // ecart : avant et arrière ne se rejoignent pas sur le côté (emmanchure ouverte)
+            const g = p3.ecart || 0, sens = avant ? 1 : -1;
+            const z = (cz * (1 - g) + sens * g) * (avant ? p3.av : p3.ar) + p3.dz;
             pos.push(wx(x), wy(p.y), z);
             // Répartition du motif selon l'angle et non en projection plate : sinon les
             // pixels du bord sont étirés sur les flancs et forment des traînées verticales.
@@ -233,79 +320,50 @@ window.initTrifonction3D = function (variante = "garcon") {
     }
 
     const group = new THREE.Group();
-    const add = (geo, mat) => { const m = new THREE.Mesh(geo, mat); group.add(m); return m; };
+    const add = (geo, mat) => {
+      group.add(new THREE.Mesh(geo, mat));
+      group.add(new THREE.Mesh(geo, mat === matFace ? inFace : inDos));
+    };
     const cloche = (t, centre, largeur) => Math.exp(-((t - centre) ** 2) / largeur);
 
     /* Torse : de l'encolure à la fourche, avec les volumes d'un vrai corps */
     const torse = profil(top, fourche, y => (fr[y].length ? outer(fr[y]) : null));
     const poitrine = variante === "fille" ? 0.1 : 0.07;
+    const tAisselle = Math.max(0.12, (ligneAisselle(fr) - top) / Math.max(1, fourche - top));
     const profTorse = (y, hw) => {
       const t = (y - top) / Math.max(1, fourche - top);           // 0 = épaules, 1 = entrejambe
       // en haut, la tenue passe par-dessus les épaules : avant et arrière se rejoignent
-      const epaules = 0.35 + 0.65 * Math.sqrt(Math.min(1, t / 0.1));
+      const epaules = 0.55 + 0.45 * Math.sqrt(Math.min(1, t / 0.1));
       const base = hw * K * (0.62 + 0.08 * Math.sin(t * Math.PI)) * epaules;
       return {
         av: base + (poitrine * cloche(t, 0.27, 0.012) + 0.02 * cloche(t, 0.62, 0.03)) * epaules, // poitrine, ventre
         ar: base + (0.03 * cloche(t, 0.2, 0.02) + 0.1 * cloche(t, 0.96, 0.012)) * epaules,       // omoplates, fessiers
         dz: 0,
+        ecart: t < tAisselle ? 0.6 * Math.sin(Math.PI * t / tAisselle) ** 0.7 : 0,
       };
     };
     const [tf, tb] = tube(torse, profTorse, null);
     add(tf, matFace); add(tb, matDos);
+    // Doublure sombre derrière les emmanchures : on ne voit pas à travers la tenue
+    const debutDoublure = Math.round(torse.length * 0.1), finDoublure = Math.round(torse.length * Math.min(0.6, tAisselle + 0.08));
+    const matDoublure = new THREE.MeshBasicMaterial({ color: 0x03050b, side: THREE.DoubleSide });
+    tube(torse.slice(debutDoublure, finDoublure), (y, hw) => {
+      const p = profTorse(y, hw);
+      return { av: p.av * 0.8, ar: p.ar * 0.8, dz: 0 };
+    }, null).forEach(g => { const m = new THREE.Mesh(g, matDoublure); m.scale.x = 0.86; group.add(m); });
 
     /* Jambes de la tenue : deux tubes depuis la fourche, qui prolongent bassin et fessiers */
     const jambe = cote => {
       const pickF = y => { const s = fr[y]; return s.length >= 2 ? (cote < 0 ? s[0] : s[s.length - 1]) : null; };
       const pickB = y => { const s = br[y]; return s && s.length >= 2 ? (cote < 0 ? s[s.length - 1] : s[0]) : null; };
       const prof = profil(fourche, bot, pickF);
-      const bas = prof.slice(-40);
-      finJambe[cote] = { ...prof[prof.length - 1], hwMoy: bas.reduce((m, p) => m + p.hw, 0) / bas.length };
       return tube(prof, (y, hw) => {
         const t = Math.min(1, (y - fourche) / 140), haut = (1 - t) ** 2;
         return { av: hw * K * (0.92 + 0.3 * haut), ar: hw * K * 0.92 + 0.12 * haut, dz: -0.02 };
       }, { dos: pickB }, 2.15);
     };
-    const finJambe = {};
     for (const cote of [-1, 1]) { const [f, b] = jambe(cote); add(f, matFace); add(b, matDos); }
 
-    /* ---------- Mannequin : corps complet sous la tenue ---------- */
-    const peau = new THREE.Group();
-    const corps = (geo, x, y, z, sx = 1, sy = 1, sz = 1, rz = 0) => {
-      const m = new THREE.Mesh(geo, matPeau);
-      m.position.set(x, y, z); m.scale.set(sx, sy, sz); m.rotation.z = rz;
-      peau.add(m);
-      return m;
-    };
-    // Torse sous la tenue (visible aux emmanchures et à l'encolure)
-    tube(torse, (y, hw) => { const p = profTorse(y, hw); return { av: p.av * 0.96, ar: p.ar * 0.96, dz: 0 }; }, null)
-      .forEach(g => corps(g, 0, 0, 0, 0.97));
-    // Formes de révolution lisses : profil (rayon, hauteur) tourné autour de l'axe
-    const tour = pts => new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(Math.max(r, 0.001), y)), 56);
-    const aisselle = torse.slice(0, Math.round(torse.length * 0.4)).reduce((m, p) => (p.hw > m.hw ? p : m));
-    const cx = wx(aisselle.c), demi = aisselle.hw * K, yHaut = wy(top);
-    const epaisseur = profTorse(aisselle.y, aisselle.hw).av;
-
-    // Épaules : une forme arrondie d'une épaule à l'autre, qui ressort par les emmanchures
-    // (plus étroite que le torse : elle ne dépasse pas en barre au-dessus de la tenue)
-    corps(new THREE.SphereGeometry(1, 48, 32), cx, yHaut - 0.26, -0.02, demi - 0.03, 0.15, epaisseur * 0.82);
-    // Cou et tête de mannequin
-    corps(tour([[0.17, 0], [0.15, 0.12], [0.14, 0.3], [0.15, 0.4]]), cx, yHaut - 0.08, -0.02);
-    corps(new THREE.SphereGeometry(0.3, 48, 32), cx, yHaut + 0.58, 0.01, 0.76, 1.04, 0.88);
-    // Bras jusqu'au coude : épaule arrondie, biceps, coude, fin arrondie
-    const bras = tour([[0, 0.17], [0.09, 0.16], [0.15, 0.11], [0.165, 0.03], [0.16, -0.12], [0.15, -0.35],
-      [0.13, -0.6], [0.115, -0.78], [0.11, -0.86], [0.09, -0.93], [0.05, -0.965], [0, -0.97]]);
-    for (const s of [-1, 1]) {
-      // le haut arrondi du bras forme l'épaule, juste au bord du torse
-      corps(bras, cx + s * (demi + 0.01), yHaut - 0.27, -0.03, 1, 1, 0.88, s * 0.07);
-      // Jambe : de l'ourlet de la tenue au mollet (genou, mollet, fin arrondie)
-      // largeur moyenne du bas de la cuisse (l'ourlet dessiné est souvent rétréci)
-      const fin = finJambe[s], r0 = fin.hwMoy * K * 0.97;
-      const jambeNue = tour([[r0, 0.1], [r0 * 0.97, -0.1], [r0 * 0.88, -0.32], [r0 * 0.8, -0.52], [r0 * 0.72, -0.66],
-        [r0 * 0.74, -0.74], [r0 * 0.8, -0.86], [r0 * 0.8, -0.96], [r0 * 0.7, -1.12], [r0 * 0.56, -1.28],
-        [r0 * 0.5, -1.36], [r0 * 0.4, -1.41], [r0 * 0.2, -1.44], [0, -1.45]]);
-      corps(jambeNue, wx(fin.c), wy(bot), -0.02, 1, 1, 0.92, -s * 0.04); // genoux légèrement rapprochés
-    }
-    group.add(peau);
     scene.add(group);
 
     /* Ombre au sol */
@@ -316,14 +374,14 @@ window.initTrifonction3D = function (variante = "garcon") {
     grad.addColorStop(0, "rgba(15,33,80,.32)");
     grad.addColorStop(1, "rgba(15,33,80,0)");
     g2.fillStyle = grad; g2.fillRect(0, 0, 128, 128);
-    const ombre = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.7), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sol), transparent: true, depthWrite: false }));
+    const ombre = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 0.8), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sol), transparent: true, depthWrite: false }));
     ombre.rotation.x = -Math.PI / 2;
-    ombre.position.y = wy(bot) - 1.5;
+    ombre.position.y = wy(bot) - 0.16;
     scene.add(ombre);
 
-    // Cadrage : de la tête au bas des jambes
-    const yMin = wy(bot) - 1.5, yMax = yHaut + 0.95;
-    camera.position.set(0, (yMin + yMax) / 2 + 0.1, ((yMax - yMin) / 2 + 0.3) / Math.tan((28 / 2) * Math.PI / 180));
+    // Cadrage : toute la tenue, en grand
+    const yMin = wy(bot) - 0.2, yMax = wy(top) + 0.05;
+    camera.position.set(0, (yMin + yMax) / 2 + 0.25, ((yMax - yMin) / 2 + 0.12) / Math.tan((28 / 2) * Math.PI / 180) + 0.3);
     camera.lookAt(0, (yMin + yMax) / 2, 0);
 
     /* ---------- Taille et rotation ---------- */

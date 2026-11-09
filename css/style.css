@@ -387,7 +387,7 @@ a.topbar__item:hover { color: var(--white); }
   .footer__grid { grid-template-columns: 1fr; gap: 28px; }
 }
 .sponsor-card--empty:only-child { grid-column: 1 / -1; max-width: 680px; }
-.trifonction-3d { position: relative; aspect-ratio: 3 / 5; max-height: 720px; width: 100%; border-radius: var(--radius); background: radial-gradient(circle at 50% 40%, #ffffff 0%, #e9eef7 70%, #dde4f0 100%); overflow: hidden; }
+.trifonction-3d { position: relative; aspect-ratio: 4 / 5; max-height: 680px; width: 100%; border-radius: var(--radius); background: radial-gradient(circle at 50% 40%, #ffffff 0%, #e9eef7 70%, #dde4f0 100%); overflow: hidden; }
 .trifonction-3d canvas { display: block; width: 100% !important; height: 100% !important; }
 .trifonction-3d:not(.is-ready)::after { content: "Chargement de la 3D…"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
 .maillot figcaption { margin-top: 10px; color: var(--muted); font-size: .92rem; }
