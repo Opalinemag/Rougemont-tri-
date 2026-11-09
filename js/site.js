@@ -256,7 +256,11 @@ async function loadAdminContent() {
     const c = await res.json();
     if (Array.isArray(c.actualites)) DATA.actualites = c.actualites;
     if (Array.isArray(c.albums)) DATA.albums = c.albums;
-    if (Array.isArray(c.sponsors)) DATA.sponsors = c.sponsors;
+    if (Array.isArray(c.sponsors)) {
+      // lienFixe : le lien du fichier sponsors.js s'affiche si la fiche du site pilote n'en a pas
+      const defaut = nom => (typeof SPONSORS !== "undefined" ? SPONSORS : []).find(d => d.lienFixe && d.nom === nom);
+      DATA.sponsors = c.sponsors.map(s => (s.site || !defaut(s.nom) ? s : { ...s, site: defaut(s.nom).site }));
+    }
     if (c.maillot && typeof c.maillot === "object") DATA.maillot = c.maillot;
     if (Array.isArray(c.entrainements)) { DATA.entrainements = c.entrainements; DATA.info = c.info || ""; }
     if (Array.isArray(c.bureau) && c.bureau.length) DATA.bureau = c.bureau;

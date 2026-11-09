@@ -32,7 +32,7 @@ const SPONSORS = [
     logo: "images/sponsors/mairie-rougemont.svg", site: "" },
   { nom: "Team GT Cycling", activite: "Support technique",
     description: "Association cycliste qui assure la conception et le suivi technique du site internet du club.",
-    logo: "images/sponsors/team-gt-cycling.svg", site: "https://team-gt-cycling.vercel.app/" },
+    logo: "images/sponsors/team-gt-cycling.svg", site: "https://team-gt-cycling.vercel.app/", lienFixe: true },
 ];
 
 const MAILLOT = {
