@@ -92,10 +92,13 @@ function renderLayout() {
         <img src="images/logo.svg" alt="Rougemont Triathlon" class="footer__logo">
         <p>Le sport ensemble, l'aventure en équipe ! Duathlon, course à pied, vélo et Bike &amp; Run, avec une place privilégiée pour les jeunes.</p>
         <p class="footer__slogan">Ensemble, faisons grandir les champions de demain !</p>
-        <a class="footer__fftri" href="https://www.fftri.com" target="_blank" rel="noopener">
-          <img src="images/fftri.svg" alt="Fédération Française de Triathlon">
-          <span>Club affilié à la Fédération Française de Triathlon (FFTRI)${CLUB.affiliationFFTRI ? " – N°" + esc(CLUB.affiliationFFTRI) : ""}</span>
-        </a>
+        <div class="footer__fftri">
+          <span class="footer__logos">
+            <a href="https://www.fftri.com" target="_blank" rel="noopener"><img src="images/fftri.svg" alt="Fédération Française de Triathlon"></a>
+            <img src="images/ligue-bfc.png" alt="Ligue régionale de triathlon Bourgogne-Franche-Comté">
+          </span>
+          <span>Club affilié à la Fédération Française de Triathlon (FFTRI)${CLUB.affiliationFFTRI ? " – N°" + esc(CLUB.affiliationFFTRI) : ""} et à la Ligue Bourgogne-Franche-Comté</span>
+        </div>
       </div>
       <div>
         <h4>Le site</h4>

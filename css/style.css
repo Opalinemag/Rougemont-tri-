@@ -74,7 +74,7 @@ a.topbar__item:hover { color: var(--white); }
 .burger span { display: block; width: 26px; height: 2px; background: var(--navy); margin: 6px 0; }
 
 /* ---------- Bannière d'accueil ---------- */
-.hero { position: relative; color: var(--white); background: var(--navy-dark) center 62% / cover no-repeat; }
+.hero { position: relative; color: var(--white); background: var(--navy-dark) center / cover no-repeat; }
 .hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15,33,80,.88) 0%, rgba(15,33,80,.6) 55%, rgba(15,33,80,.25) 100%); }
 .hero__inner { position: relative; padding: 110px 0 120px; max-width: 640px; }
 .hero__label { display: inline-block; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; font-size: .85rem; padding-left: 14px; border-left: 3px solid var(--red); margin-bottom: 18px; }
@@ -575,3 +575,10 @@ a[href^="mailto:"] { overflow-wrap: anywhere; }
 .pass-sport__montant strong { font-family: var(--head); font-size: 2rem; color: var(--red); vertical-align: -3px; margin-right: 4px; }
 .pass-sport__etapes { margin: 8px 0 0; padding-left: 22px; }
 .pass-sport__etapes li { margin-bottom: 4px; }
+
+/* Logos FFTRI et Ligue Bourgogne-Franche-Comté */
+.footer__fftri { flex-direction: column; align-items: flex-start; gap: 10px; }
+.footer__logos { display: flex; gap: 10px; }
+.footer__logos img { width: 78px; height: 62px; object-fit: contain; background: var(--white); border-radius: 8px; padding: 6px; }
+.legal__logos { display: flex; gap: 18px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+.legal__logos .legal__fftri { margin-top: 0; width: auto; height: 78px; }
